@@ -1,0 +1,18 @@
+# Stare adrese (ardornamjestaj.com do 2026.) → nove. 301 = trajno, Google prenosi poziciju.
+/index.php                        /                                   301
+/index.html                       /                                   301
+/onama.html                       /o-nama/                            301
+/kontakt.html                     /kontakt/                           301
+/namjestaj-po-mjeri.html          /namjestaj-po-mjeri/                301
+/kuhinje.html                     /namjestaj/kuhinja/                 301
+/garniture-i-lezajevi.html        /namjestaj/dnevni-boravak/          301
+/regali.html                      /namjestaj/dnevni-boravak/          301
+/bracna-soba.html                 /namjestaj/spavaca-soba/            301
+/djecija-soba.html                /namjestaj/djecja-soba/             301
+/lezajevi-i-madraci.html          /namjestaj/lezajevi-i-madraci/      301
+/kucni-tekstil.html               /namjestaj/                         301
+/ormari-i-ugradbeni-plakari.html  /namjestaj/ormari-i-plakari/        301
+/predsoblja-i-komode.html         /namjestaj/hodnik/                  301
+/kancelarijski-program.html       /namjestaj/ured/                    301
+/stolovi-i-stolice.html           /namjestaj/trpezarija/              301
+/novost.php                       /inspiracija/                       301

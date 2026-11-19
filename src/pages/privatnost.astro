@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro'
+import { SITE } from '../data/site'
+---
+<Base title="Pravila privatnosti | ARDOR namještaj" description="Kako ARDOR namještaj prikuplja, koristi i čuva lične podatke posjetitelja web stranice i kupaca.">
+  <section class="page-head"><div class="wrap">
+    <nav class="crumbs" aria-label="Putanja"><a href="/">Početna</a><span>Privatnost</span></nav>
+    <h1>Pravila privatnosti</h1>
+    <p class="note">Nacrt — prije objave pregledati s pravnim savjetnikom.</p>
+  </div></section>
+  <section class="sec-tight" style="padding-top:0"><div class="wrap prose">
+    <h2>Ko obrađuje podatke</h2>
+    <p>{SITE.legal}, {SITE.street}, {SITE.zip} {SITE.city}, Bosna i Hercegovina. Kontakt za pitanja o privatnosti: <a href="mailto:info@ardornamjestaj.com">info@ardornamjestaj.com</a>.</p>
+    <h2>Koje podatke prikupljamo</h2>
+    <ul>
+      <li><b>Upiti, zakazivanje posjeta i mjerenja:</b> ime, telefon, e-mail (ako ga upišeš), prostorija, mjere, poruka, fotografije koje priložiš, odabrani termin i adresa za mjerenje.</li>
+      <li><b>AI savjetnik:</b> odgovori na pitanja (prostorija, kvadratura, stil, budžet). Savjetnik ne traži ime ni kontakt.</li>
+      <li><b>Kolačići i analitika:</b> samo uz tvoj pristanak — vidi <a href="/kolacici/">Kolačići</a>.</li>
+    </ul>
+    <h2>Zašto</h2>
+    <p>Da bismo odgovorili na upit, pripremili ponudu, dogovorili termin ili mjerenje. Podatke ne prodajemo i ne dajemo trećim stranama za njihov marketing.</p>
+    <h2>Gdje se čuvaju i koliko dugo</h2>
+    <p>Upiti se spremaju u ARDOR internu aplikaciju kojoj pristupaju samo ovlašteni zaposlenici. Upit bez kupovine čuvamo najviše 24 mjeseca; podatke kupaca čuvamo koliko propisi o računovodstvu i garanciji nalažu.</p>
+    <h2>AI usluge</h2>
+    <p>Za AI savjetnika i pomoćnika za materijale koristimo vanjski AI servis. Šaljemo mu samo odgovore iz upitnika ili tekst pitanja — nikad ime, telefon, e-mail ni fotografije.</p>
+    <h2>Tvoja prava</h2>
+    <p>Možeš tražiti uvid, ispravku ili brisanje svojih podataka, te povući pristanak, pisanim putem na gornji e-mail. Imaš pravo na prigovor Agenciji za zaštitu ličnih podataka u BiH.</p>
+  </div></section>
+</Base>

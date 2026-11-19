@@ -1,0 +1,23 @@
+---
+import Base from '../../layouts/Base.astro'
+import Catalog from '../../components/Catalog.astro'
+import RoomGrid from '../../components/RoomGrid.astro'
+import CtaBand from '../../components/CtaBand.astro'
+import { getCatalog } from '../../data/catalog'
+const { products, source } = await getCatalog()
+---
+<Base title="Katalog namještaja — ARDOR salon Banja Luka" description="Garniture, spavaće sobe, kuhinje, ormari, dječje sobe i madraci. Filtriraj po prostoriji, stilu, boji, materijalu, cijeni i dostupnosti.">
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Putanja"><a href="/">Početna</a><span>Katalog</span></nav>
+      <div class="eyebrow">Katalog</div>
+      <h1>Namještaj iz salona i po mjeri.</h1>
+      <p class="lead">Sve što vidiš možeš isprobati u salonu od 6000 m². Oznaka „Odmah sa zalihe” znači dostavu za nekoliko dana, „Po narudžbi” — izradu u dogovorenom roku.</p>
+    </div>
+  </section>
+  <section class="sec-tight" style="padding-top:0"><div class="wrap"><Catalog products={products} />
+    {source === 'primjer' && <p class="note" style="margin-top:30px">Prikazan je primjerni katalog — pravi artikli dolaze iz ARDOR aplikacije.</p>}
+  </div></section>
+  <section class="sec-tight"><div class="wrap"><div class="eyebrow">Po prostorijama</div><h2 style="margin-bottom:40px">Kreni od prostorije.</h2><RoomGrid /></div></section>
+  <CtaBand title="Ne vidiš što tražiš?" text="Velik dio namještaja radimo po mjeri u vlastitom pogonu. Pošalji mjere ili fotografiju — predložit ćemo rješenje." />
+</Base>

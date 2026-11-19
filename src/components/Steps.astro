@@ -1,0 +1,14 @@
+---
+const steps = [
+  ['Razgovor', 'U salonu ili telefonom: kako živiš, što ti smeta, koliki je budžet.'],
+  ['Mjerenje', 'Dolazimo kod tebe i mjerimo prostor do milimetra, s instalacijama.'],
+  ['3D prijedlog', 'Vidiš kuhinju ili plakar prije nego nastane. Mijenjamo dok ne bude tvoje.'],
+  ['Materijali', 'Biraš frontove, boje, okove i rasvjetu — uzorke držiš u ruci.'],
+  ['Izrada', 'Proizvodnja u našem pogonu u Banjoj Luci, s javljenim rokom.'],
+  ['Montaža', 'Dostava, montaža i odvoz ambalaže. Uz garanciju na izradu.'],
+]
+---
+<div class="steps-wrap reveal">
+  <div class="progress-line"></div>
+  <div class="steps">{steps.map(([h, p]) => <div class="step"><h3>{h}</h3><p>{p}</p></div>)}</div>
+</div>

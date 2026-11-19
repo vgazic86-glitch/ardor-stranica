@@ -1,0 +1,56 @@
+---
+import type { WebProduct } from '../data/catalog'
+import { COLORS, MATERIALS, ROOMS, STYLES } from '../data/site'
+import ProductCard from './ProductCard.astro'
+interface Props { products: WebProduct[]; roomFilter?: boolean; initialRoom?: string }
+const { products, roomFilter = true, initialRoom = '' } = Astro.props
+const max = Math.max(1000, Math.ceil(Math.max(...products.map((p) => p.price)) / 500) * 500)
+const rooms = ROOMS.filter((r) => products.some((p) => p.room === r.key))
+---
+<div class="catalog" data-room={initialRoom}>
+  {roomFilter && (
+    <div class="filters">
+      <button class="chip on" data-r="">Sve</button>
+      {rooms.map((r) => <button class="chip" data-r={r.key}>{r.name}</button>)}
+    </div>
+  )}
+  <div class="filter-row">
+    <select data-f="style" aria-label="Stil"><option value="">Svi stilovi</option>{Object.entries(STYLES).map(([k, v]) => <option value={k}>{v}</option>)}</select>
+    <select data-f="color" aria-label="Boja"><option value="">Sve boje</option>{Object.entries(COLORS).map(([k, v]) => <option value={k}>{v}</option>)}</select>
+    <select data-f="mat" aria-label="Materijal"><option value="">Svi materijali</option>{Object.entries(MATERIALS).map(([k, v]) => <option value={k}>{v}</option>)}</select>
+    <select data-f="avail" aria-label="Dostupnost"><option value="">Svaka dostupnost</option><option value="stanje">Odmah sa zalihe</option><option value="narudzba">Po narudžbi</option></select>
+    <label class="price-filter">do <input type="range" data-f="price" min="500" max={max} step="250" value={max} aria-label="Najviša cijena"><b class="price-val"></b></label>
+    <span class="count"></span>
+  </div>
+  <div class="products">
+    {products.map((p, i) => <ProductCard p={p} i={i} />)}
+    <div class="empty" hidden>Nema komada za ove filtere. Ne vidiš što tražiš? <b>Napravit ćemo po mjeri.</b><br><br><a class="btn btn-primary" href="/kontakt/?vrsta=ponuda">Zatraži ponudu po mjeri</a></div>
+  </div>
+</div>
+<script>
+  const km = (n: number) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' KM'
+  document.querySelectorAll<HTMLElement>('.catalog').forEach((cat) => {
+    let room = cat.dataset.room || new URLSearchParams(location.search).get('prostorija') || ''
+    const val = (f: string) => (cat.querySelector(`[data-f="${f}"]`) as HTMLInputElement).value
+    const cards = [...cat.querySelectorAll<HTMLElement>('.product')]
+    const render = () => {
+      const p = Number(val('price'))
+      cat.querySelector('.price-val')!.textContent = km(p)
+      let n = 0
+      cards.forEach((c) => {
+        const d = c.dataset
+        const ok = (!room || d.room === room) && (!val('style') || d.style === val('style')) && (!val('color') || d.color === val('color')) && (!val('mat') || d.mat === val('mat')) && (!val('avail') || d.avail === val('avail')) && Number(d.price) <= p
+        c.hidden = !ok
+        if (ok) { n++; c.classList.add('in') }
+      })
+      cat.querySelector('.count')!.textContent = `${n} ${n % 10 === 1 && n % 100 !== 11 ? 'komad' : 'komada'}`
+      ;(cat.querySelector('.empty') as HTMLElement).hidden = n > 0
+    }
+    cat.querySelectorAll<HTMLButtonElement>('.chip').forEach((b) => {
+      b.classList.toggle('on', b.dataset.r === room)
+      b.addEventListener('click', () => { room = b.dataset.r || ''; cat.querySelectorAll('.chip').forEach((c) => c.classList.toggle('on', c === b)); render() })
+    })
+    cat.querySelectorAll('[data-f]').forEach((el) => el.addEventListener('input', render))
+    render()
+  })
+</script>

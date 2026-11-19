@@ -1,0 +1,51 @@
+---
+/** Pomoćnik za materijale: brza pitanja (odmah) + slobodno pitanje (AI iz ARDOR baze znanja). */
+const QA = [
+  ['Akril, laminat ili masiv?', '<b>Akril</b> daje dubok visoki sjaj i lako se briše — idealan za moderne kuhinje. <b>Laminat / oplemenjena iverica</b> najotporniji je na ogrebotine i najpovoljniji, s vjernim dekorima drveta. <b>Masivno drvo</b> je toplo i trajno, može se brusiti i obnoviti, ali traži više njege i viši budžet.'],
+  ['Koja boja kuhinje za mali prostor?', 'Za kuhinju do 8 m²: <b>svijetli frontovi</b> (bijela, krem, svijetlosiva) s <b>visokim sjajem</b> reflektiraju svjetlo. Gornji elementi do stropa u boji zida „nestaju”. Toplo drvo stavi na radnu plohu ili police da prostor ne bude hladan.'],
+  ['Kako čistiti tkaninu garniture?', 'Usisavaj jednom sedmično nastavkom s četkom. Mrlju odmah <b>tapkaj</b> (ne trljaj) vlažnom krpom i blagim sapunom. Izbjegavaj direktno sunce — blijedi boju. Pitaj nas za tkanine s <b>easy-clean</b> zaštitom.'],
+  ['Koji madrac odabrati?', 'Ako spavaš na boku — srednje mekan, s memorijskom pjenom. Na leđima ili stomaku — čvršći. Za parove s razlikom težine preko 30 kg: <b>džepičaste opruge</b> koje ne prenose pokret. Najbolje: dođi i <b>isprobaj u studiju spavanja</b>.'],
+  ['MDF ili iverica za plakar?', '<b>Oplemenjena iverica</b> je standard za korpus plakara — stabilna i povoljna. <b>MDF</b> biramo za frontove kad želiš lakiranu boju ili profile. Za police duže od 80 cm uzimamo deblju ivericu (25 mm) da se ne savijaju.'],
+]
+---
+<div class="ask">
+  <h3>Pitaj o materijalima</h3>
+  <div class="ask-chips">{QA.map(([q], i) => <button class="chip" type="button" data-i={i}>{q}</button>)}</div>
+  <form class="ask-form" style="display:flex;gap:8px;margin-bottom:12px">
+    <input name="q" placeholder="Ili napiši svoje pitanje…" maxlength="300" style="flex:1;min-width:0" aria-label="Pitanje o materijalima">
+    <button class="btn btn-primary" style="padding:12px 18px">Pitaj</button>
+  </form>
+  <div class="ask-answer" aria-live="polite">Odaberi pitanje iznad — odgovor stiže odmah.</div>
+</div>
+<script type="application/json" id="qaData" set:html={JSON.stringify(QA)} />
+<script>
+  const API = (import.meta.env.PUBLIC_ARDOR_API_URL || '').replace(/\/$/, '')
+  const QA: [string, string][] = JSON.parse(document.getElementById('qaData')!.textContent || '[]')
+  const box = document.querySelector('.ask')
+  if (box) {
+    const out = box.querySelector<HTMLElement>('.ask-answer')!
+    const typing = () => { out.innerHTML = '<div class="typing"><i></i><i></i><i></i></div>' }
+    const esc = (s: string) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]!)
+    box.querySelector('.ask-chips')!.addEventListener('click', (e) => {
+      const b = (e.target as Element).closest<HTMLElement>('.chip'); if (!b) return
+      box.querySelectorAll('.ask-chips .chip').forEach((c) => c.classList.toggle('on', c === b))
+      typing(); setTimeout(() => { out.innerHTML = QA[Number(b.dataset.i)][1] }, 600)
+    })
+    box.querySelector('form')!.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const q = String(new FormData(e.target as HTMLFormElement).get('q') || '').trim()
+      if (q.length < 4) return
+      typing()
+      try {
+        if (!API) throw new Error()
+        const r = await fetch(`${API}/api/web/pitanje`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ pitanje: q }), signal: AbortSignal.timeout(20000) })
+        const j = await r.json()
+        if (!r.ok || !j.odgovor) throw new Error()
+        out.innerHTML = esc(j.odgovor).replace(/\n/g, '<br>') + '<br><br><a href="/kontakt/?vrsta=posjet">Razgovaraj s dizajnerom u salonu →</a>'
+        window.ardorTrack?.('ai_pitanje', {})
+      } catch {
+        out.innerHTML = 'Na to pitanje najbolje odgovara naš dizajner. Nazovi <a href="tel:+38751433750">051 433 750</a> ili <a href="/kontakt/?vrsta=posjet">zakaži posjet salonu</a>.'
+      }
+    })
+  }
+</script>

@@ -1,0 +1,8 @@
+---
+interface Props { title?: string; text?: string; primary?: [string, string]; secondary?: [string, string] }
+const { title = 'Imaš mjere? Imamo prijedlog.', text = 'Pošalji fotografiju prostorije i okvirne mjere — javljamo se isti radni dan.', primary = ['Zatraži besplatnu ponudu', '/kontakt/?vrsta=ponuda'], secondary = ['Zakaži posjet salonu', '/kontakt/?vrsta=posjet'] } = Astro.props
+---
+<section class="sec-tight"><div class="wrap"><div class="cta-band reveal">
+  <div><h2>{title}</h2><p style="margin:14px 0 0;color:#D9CCBA;max-width:520px">{text}</p></div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap"><a class="btn btn-primary" href={primary[1]}>{primary[0]}</a><a class="btn btn-ghost" href={secondary[1]}>{secondary[0]}</a></div>
+</div></div></section>

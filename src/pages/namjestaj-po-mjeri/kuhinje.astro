@@ -1,0 +1,20 @@
+---
+import Base from '../../layouts/Base.astro'
+import CustomLanding from '../../components/CustomLanding.astro'
+import { getCatalog } from '../../data/catalog'
+const { products } = await getCatalog()
+const faq: [string, string][] = [
+  ['Koliko traje izrada kuhinje po mjeri?', 'Od potvrde nacrta obično nekoliko sedmica, ovisno o materijalu. Tačan rok upisujemo u ponudu.'],
+  ['Akril ili lakirani MDF?', 'Akril daje dubok sjaj i lako se briše, povoljniji je. Lakirani MDF može biti u bilo kojoj boji, s profilima ili bez, mat ili sjaj.'],
+  ['Mogu li uz kuhinju dobiti i aparate?', 'Pripremamo kuhinju za ugradne aparate po tvom izboru i ugrađujemo električne dodatke i LED rasvjetu.'],
+  ['Šta ako zidovi nisu ravni?', 'Mjerimo na više mjesta i radimo s maskama i podesivim nogicama — kuhinja sjedne i u starije stanove.'],
+]
+const faqLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }
+---
+<Base title="Kuhinje po mjeri Banja Luka — akril, MDF, iverica | ARDOR" description="Kuhinja tačno po tvom prostoru: akrilni visoki sjaj, lakirani MDF ili dekori drveta. Besplatno mjerenje i 3D prijedlog u Banjoj Luci." image="/img/chamomix.jpg" schema={[faqLd]}>
+  <CustomLanding name="Kuhinje" img="/img/chamomix.jpg" room="kuhinja"
+    h1="Kuhinja koja prati tvoj način kuhanja."
+    sub="Mjerimo kod tebe, crtamo 3D prijedlog i radimo u našem pogonu — od akrilnog visokog sjaja do lakiranog MDF-a u bilo kojoj boji."
+    benefits={['<b>Svaki centimetar iskorišten</b> — i niša uz dimnjak, i prostor iznad frižidera.', '<b>Elementi do stropa</b> — 20–30 % više mjesta za spremanje.', '<b>Radni trokut po tvom kuhanju</b> — sudoper, ploča i frižider gdje ti trebaju.', '<b>Okovi s tihim zatvaranjem</b>, push-to-open, LED rasvjeta ispod elemenata.', '<b>Jedan tim</b> od mjerenja do montaže, uz garanciju na izradu.']}
+    faq={faq} products={products.filter((p) => p.room === 'kuhinja')} />
+</Base>

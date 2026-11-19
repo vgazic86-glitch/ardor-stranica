@@ -1,0 +1,21 @@
+---
+import type { WebProduct } from '../data/catalog'
+import { km } from '../data/site'
+interface Props { p: WebProduct; i?: number }
+const { p, i = 0 } = Astro.props
+const href = `/namjestaj/${p.room}/${p.slug}/`
+---
+<a class="product reveal" href={href} style={`transition-delay:${(i % 3) * 0.08}s;text-decoration:none`}
+  data-room={p.room} data-style={p.style} data-color={p.color} data-mat={p.material} data-avail={p.avail} data-price={p.price}>
+  <div class="p-img">
+    <span class:list={['badge', { order: p.avail !== 'stanje' }]}><i></i>{p.avail === 'stanje' ? 'Odmah sa zalihe' : 'Po narudžbi'}</span>
+    {p.oldPrice && <span class="badge sale">−{Math.round((1 - p.price / p.oldPrice) * 100)} %</span>}
+    <img src={p.images[0]} alt={`${p.name} — ${p.type}`} loading="lazy" width="600" height="414">
+    {p.images[1] && <img class="alt" src={p.images[1]} alt="" loading="lazy" width="600" height="414">}
+    <div class="quick"><span class="btn btn-primary">Pogledaj i zatraži ponudu</span></div>
+  </div>
+  <div class="p-info">
+    <div><h3>{p.name}</h3><small>{p.type}</small><div class="swatches">{p.swatches.map((c) => <i style={`background:${c}`}></i>)}</div></div>
+    <div class="p-price">{p.oldPrice && <s>{km(p.oldPrice)}</s>}od {km(p.price)}</div>
+  </div>
+</a>

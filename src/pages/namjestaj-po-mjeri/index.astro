@@ -1,0 +1,70 @@
+---
+import Base from '../../layouts/Base.astro'
+import Steps from '../../components/Steps.astro'
+import MaterialCards from '../../components/MaterialCards.astro'
+import MaterialsAsk from '../../components/MaterialsAsk.astro'
+import LeadForm from '../../components/LeadForm.astro'
+import CtaBand from '../../components/CtaBand.astro'
+const svc = {
+  '@context': 'https://schema.org', '@type': 'Service', name: 'Namještaj po mjeri', serviceType: 'Izrada namještaja po mjeri',
+  provider: { '@id': 'https://www.ardornamjestaj.com/#salon' }, areaServed: 'Bosna i Hercegovina',
+  description: 'Kuhinje, ugradbeni plakari, američki ormari i komode po mjeri iz vlastitog pogona u Banjoj Luci. Besplatno mjerenje, 3D prijedlog, izrada i montaža.',
+}
+---
+<Base title="Namještaj po mjeri Banja Luka — kuhinje i plakari | ARDOR" description="Kuhinje, ugradbeni plakari i ormari po mjeri iz našeg pogona. Besplatno mjerenje, 3D prijedlog, izrada i montaža. Zakaži mjerenje." image="/img/bianca.jpg" schema={[svc]}>
+  <section class="hero short">
+    <div class="hero-media"><img src="/img/bianca.jpg" alt="Kuhinja po mjeri u visokom sjaju"></div>
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Putanja"><a href="/">Početna</a><span>Namještaj po mjeri</span></nav>
+      <div class="eyebrow">Namještaj po mjeri · vlastiti pogon od 2016.</div>
+      <h1>Svaki centimetar tvog prostora — iskorišten.</h1>
+      <p class="hero-sub">Kosi zid, niša uz dimnjak, hodnik od metar i deset? To nisu problemi, to su mjere. Radimo tačno po tvom prostoru, a uzorke materijala držiš u ruci prije nego se odlučiš.</p>
+      <div class="hero-cta"><a class="btn btn-primary" href="#upit">Zakaži besplatno mjerenje</a><a class="btn btn-ghost" href="#proces">Kako radimo</a></div>
+    </div>
+  </section>
+
+  <section id="proces"><div class="wrap">
+    <div class="custom-top">
+      <div><div class="eyebrow reveal">Proces</div><h2 class="reveal d1">Od prve skice do zadnjeg šarafa — jedan tim.</h2></div>
+      <p class="lead reveal d2">Ne šaljemo te od projektanta do stolara do montažera. Isti ljudi slušaju što trebaš, mjere, crtaju, proizvode i montiraju.</p>
+    </div>
+    <Steps />
+  </div></section>
+
+  <section class="custom"><div class="wrap">
+    <div class="custom-top">
+      <div><div class="eyebrow reveal">Materijali</div><h2 class="reveal d1">Biraš ono što ti odgovara, ne ono što je ostalo na skladištu.</h2></div>
+      <p class="lead reveal d2">Uz materijale biraš i LED rasvjetu, električne dodatke za kuhinju i okove — od klasičnih šarki do tihog zatvaranja i push-to-open sistema.</p>
+    </div>
+    <MaterialCards />
+    <div style="max-width:720px"><MaterialsAsk /></div>
+  </div></section>
+
+  <section><div class="wrap">
+    <div class="eyebrow reveal">Što radimo po mjeri</div>
+    <h2 class="reveal d1" style="margin-bottom:40px">Najčešće narudžbe</h2>
+    <div class="cats" style="grid-auto-rows:280px">
+      <a class="cat mid reveal" href="/namjestaj-po-mjeri/kuhinje/"><img src="/img/chamomix.jpg" alt="" loading="lazy"><div class="cat-txt"><div><h3>Kuhinje</h3><small>Akril, MDF, iverica · s otokom ili bez</small></div><span class="arrow">→</span></div></a>
+      <a class="cat mid reveal d1" href="/namjestaj-po-mjeri/ugradbeni-plakari/"><img src="/img/chilly.jpg" alt="" loading="lazy" style="object-position:85% 50%"><div class="cat-txt"><div><h3>Ugradbeni plakari</h3><small>Od poda do stropa, klizna vrata</small></div><span class="arrow">→</span></div></a>
+      <a class="cat sm pattern reveal" href="/kontakt/?vrsta=ponuda"><div class="cat-txt"><div><h3>Američki ormari</h3><small>Garderobni prostor po mjeri</small></div><span class="arrow">→</span></div></a>
+      <a class="cat sm pattern t2 reveal d1" href="/kontakt/?vrsta=ponuda"><div class="cat-txt"><div><h3>Komode i TV zidovi</h3><small>Za tačno tvoj zid</small></div><span class="arrow">→</span></div></a>
+      <a class="cat sm pattern reveal d2" href="/kontakt/?vrsta=ponuda"><div class="cat-txt"><div><h3>Poslovni prostori</h3><small>Uredi, recepcije, lokali</small></div><span class="arrow">→</span></div></a>
+    </div>
+  </div></section>
+
+  <section class="sec-tight" style="padding-top:0"><div class="wrap grid-2" style="align-items:start">
+    <div><div class="eyebrow">Česta pitanja</div><h2>Prije prvog mjerenja</h2></div>
+    <div class="faq">
+      <details open><summary>Da li je mjerenje stvarno besplatno?</summary><p>Da. Dolazimo, mjerimo i pripremamo prijedlog bez obaveze kupovine.</p></details>
+      <details><summary>Koliko traje izrada?</summary><p>Ovisi o materijalu i veličini — tačan rok upisujemo u ponudu prije nego se odlučiš.</p></details>
+      <details><summary>Mogu li vidjeti kako će izgledati?</summary><p>Da, prije izrade dobiješ 3D prijedlog i uzorke materijala. Mijenjamo nacrt dok ne bude onako kako želiš.</p></details>
+      <details><summary>Može li na rate?</summary><p>Može — gotovina, kartice ili partnerski kredit od 300 do 50.000 KM na 3 do 120 mjeseci. <a href="/placanje-na-rate/">Izračunaj ratu</a>.</p></details>
+    </div>
+  </div></section>
+
+  <section class="contact" id="upit"><div class="wrap contact-grid">
+    <div><div class="eyebrow">Zakaži mjerenje</div><h2>Pošalji mjere ili nas pozovi da izmjerimo.</h2><p class="lead" style="margin-top:18px">Dodaj fotografiju prostorije i okvirne mjere — u dogovoru dolazimo na mjerenje u Banjoj Luci i okolini.</p></div>
+    <LeadForm vrsta="mjerenje" />
+  </div></section>
+  <CtaBand title="Radije uživo?" text="Dođi u salon s mjerama i fotografijama — za 20 minuta nacrtamo prvu varijantu." primary={['Zakaži posjet salonu', '/kontakt/?vrsta=posjet']} secondary={['Nazovi 051 433 750', 'tel:+38751433750']} />
+</Base>

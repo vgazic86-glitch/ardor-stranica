@@ -1,0 +1,135 @@
+---
+/** Obrazac: besplatna ponuda / zakazivanje posjeta / zakazivanje mjerenja. Šalje u ARDOR aplikaciju. */
+import { SITE } from '../data/site'
+interface Props { vrsta?: 'ponuda' | 'posjet' | 'mjerenje'; proizvod?: string; prostorija?: string }
+const { vrsta = 'ponuda', proizvod = '', prostorija = '' } = Astro.props
+const rooms = ['Kuhinja', 'Dnevni boravak', 'Spavaća soba', 'Ugradbeni plakar', 'Dječja soba', 'Trpezarija', 'Hodnik', 'Ured', 'Kompletan stan / kuća']
+---
+<div class="form-card lead-form" data-vrsta={vrsta}>
+  <div class="tabs" role="tablist">
+    <button type="button" data-t="ponuda">Besplatna ponuda</button>
+    <button type="button" data-t="posjet">Zakaži posjet</button>
+    <button type="button" data-t="mjerenje">Mjerenje</button>
+  </div>
+  <form novalidate>
+    <input type="hidden" name="proizvod" value={proizvod}>
+    <input type="hidden" name="savjet" value="">
+    <div style="position:absolute;left:-9999px" aria-hidden="true"><label>Web stranica<input name="website" tabindex="-1" autocomplete="off"></label></div>
+    <div class="two">
+      <label class="field">Ime i prezime<input required name="ime" autocomplete="name" maxlength="80"></label>
+      <label class="field">Telefon<input required name="telefon" type="tel" autocomplete="tel" placeholder="+387 …" maxlength="30"></label>
+    </div>
+    <label class="field">E-mail (nije obavezno)<input name="email" type="email" autocomplete="email" maxlength="120"></label>
+    <div class="f-ponuda">
+      <div class="two">
+        <label class="field">Prostorija<select name="prostorija">{rooms.map((r) => <option selected={r === prostorija}>{r}</option>)}</select></label>
+        <label class="field">Okvirne dimenzije<input name="dimenzije" placeholder="npr. 320 × 180 cm" maxlength="80"></label>
+      </div>
+      <label class="field">Željeni stil i napomena<textarea name="poruka" rows="3" maxlength="1500" placeholder="npr. svijetla kuhinja, bez ručki, s otokom…">{proizvod ? `Zanima me: ${proizvod}. ` : ''}</textarea></label>
+      <label class="drop"><input type="file" accept="image/*" multiple class="files">📷 Dodaj fotografije prostorije ili skicu<br><small>povuci ovdje ili klikni · do 5 slika</small><div class="thumbs"></div></label>
+    </div>
+    <div class="f-termin" hidden>
+      <div class="two">
+        <label class="field">Dan<input type="date" name="datum"></label>
+        <label class="field f-adresa" hidden>Adresa za mjerenje<input name="adresa" maxlength="160" placeholder="ulica i broj, mjesto"></label>
+      </div>
+      <div class="field">Termin<div class="slots"></div></div>
+    </div>
+    <label class="check"><input type="checkbox" name="pristanak" required> <span>Slažem se da me ARDOR kontaktira u vezi s ovim upitom (<a href="/privatnost/">pravila privatnosti</a>).</span></label>
+    <p class="form-error" hidden></p>
+    <button class="btn btn-primary submit" type="submit" style="width:100%;justify-content:center">Pošalji upit</button>
+    <p class="note" style="margin:14px 0 0;text-align:center">Javljamo se isti radni dan. Hitno? Nazovi <a href={SITE.phoneHref} data-ev="poziv">{SITE.phone}</a>.</p>
+  </form>
+</div>
+
+<script>
+  import { track } from '../scripts/site'
+  const API = (import.meta.env.PUBLIC_ARDOR_API_URL || '').replace(/\/$/, '')
+  const SLOTS = ['09:00', '10:30', '12:00', '13:30', '15:00', '16:30', '18:00', '19:30']
+
+  /** Smanji sliku na najviše 1600 px (JPEG), da upit ne bude prevelik. */
+  async function shrink(f: File): Promise<Blob> {
+    try {
+      const bmp = await createImageBitmap(f)
+      const s = Math.min(1, 1600 / Math.max(bmp.width, bmp.height))
+      const c = document.createElement('canvas'); c.width = Math.round(bmp.width * s); c.height = Math.round(bmp.height * s)
+      c.getContext('2d')!.drawImage(bmp, 0, 0, c.width, c.height)
+      return await new Promise((r) => c.toBlob((b) => r(b || f), 'image/jpeg', 0.82))
+    } catch { return f }
+  }
+
+  document.querySelectorAll<HTMLElement>('.lead-form').forEach((card) => {
+    const form = card.querySelector('form')!
+    let vrsta = new URLSearchParams(location.search).get('vrsta') || card.dataset.vrsta || 'ponuda'
+    let files: File[] = []
+    const set = (t: string) => {
+      vrsta = ['ponuda', 'posjet', 'mjerenje'].includes(t) ? t : 'ponuda'
+      card.querySelectorAll<HTMLButtonElement>('.tabs button').forEach((b) => b.classList.toggle('on', b.dataset.t === vrsta))
+      ;(card.querySelector('.f-ponuda') as HTMLElement).hidden = vrsta === 'posjet'
+      ;(card.querySelector('.f-termin') as HTMLElement).hidden = vrsta === 'ponuda'
+      ;(card.querySelector('.f-adresa') as HTMLElement).hidden = vrsta !== 'mjerenje'
+      card.querySelector('.submit')!.textContent = { ponuda: 'Pošalji upit za ponudu', posjet: 'Rezerviši termin u salonu', mjerenje: 'Zakaži besplatno mjerenje' }[vrsta]!
+    }
+    card.querySelectorAll<HTMLButtonElement>('.tabs button').forEach((b) => b.addEventListener('click', () => set(b.dataset.t!)))
+    document.addEventListener('ardor:vrsta', (e) => set((e as CustomEvent).detail))
+    set(vrsta)
+
+    // termini: od sutra, bez nedjelje
+    const d = card.querySelector<HTMLInputElement>('[name=datum]')!
+    const t = new Date(); t.setDate(t.getDate() + 1); if (t.getDay() === 0) t.setDate(t.getDate() + 1)
+    const iso = (x: Date) => `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`
+    d.min = iso(t); d.value = iso(t)
+    const slots = card.querySelector('.slots')!
+    let slot = SLOTS[2]
+    const drawSlots = () => {
+      const sat = new Date(d.value + 'T12:00').getDay() === 6
+      const list = SLOTS.filter((s) => !sat || s < '18:00')
+      if (!list.includes(slot)) slot = list[0]
+      slots.innerHTML = list.map((s) => `<button type="button" class="${s === slot ? 'on' : ''}">${s}</button>`).join('')
+    }
+    d.addEventListener('change', () => { if (new Date(d.value + 'T12:00').getDay() === 0) { const n = new Date(d.value + 'T12:00'); n.setDate(n.getDate() + 1); d.value = iso(n) } drawSlots() })
+    slots.addEventListener('click', (e) => { const b = e.target as HTMLElement; if (b.tagName === 'BUTTON') { slot = b.textContent!; drawSlots() } })
+    drawSlots()
+
+    // fotografije
+    const drop = card.querySelector<HTMLElement>('.drop')!, input = card.querySelector<HTMLInputElement>('.files')!, thumbs = card.querySelector('.thumbs')!
+    const show = (fl: FileList | File[]) => {
+      files = [...fl].filter((f) => f.type.startsWith('image/')).slice(0, 5)
+      thumbs.innerHTML = ''
+      files.forEach((f) => { const im = document.createElement('img'); im.src = URL.createObjectURL(f); im.alt = ''; thumbs.append(im) })
+    }
+    input.addEventListener('change', () => input.files && show(input.files))
+    ;['dragover', 'dragenter'].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('drag') }))
+    ;['dragleave', 'drop'].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove('drag'); const dt = (e as DragEvent).dataTransfer; if (dt?.files.length) show(dt.files) }))
+
+    const err = card.querySelector<HTMLElement>('.form-error')!
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      err.hidden = true
+      if (!form.checkValidity()) { form.reportValidity(); return }
+      const btn = card.querySelector<HTMLButtonElement>('.submit')!
+      btn.disabled = true; const label = btn.textContent; btn.textContent = 'Šaljem…'
+      const fd = new FormData(form)
+      fd.set('vrsta', vrsta)
+      fd.set('izvor', location.pathname)
+      try { fd.set('savjet', sessionStorage.getItem('ardor.savjet') || '') } catch { /* nema veze */ }
+      if (vrsta !== 'ponuda') fd.set('termin', slot); else { fd.delete('datum') }
+      for (const f of files) fd.append('slike', await shrink(f), f.name.replace(/\.\w+$/, '') + '.jpg')
+      try {
+        if (!API) throw new Error('bez-api')
+        const r = await fetch(`${API}/api/web/upit`, { method: 'POST', body: fd })
+        const j = await r.json().catch(() => ({}))
+        if (!r.ok || !j.ok) throw new Error(j.error || 'Greška pri slanju.')
+        track({ ponuda: 'upit_poslan', posjet: 'posjet_zakazan', mjerenje: 'mjerenje_zakazano' }[vrsta]!, { prostorija: fd.get('prostorija') })
+        const ime = String(fd.get('ime')).split(' ')[0]
+        card.innerHTML = `<div class="ok-msg"><div class="big">✓</div><h3>Hvala, ${ime.replace(/[<>&]/g, '')}!</h3><p style="color:var(--muted);margin-top:10px">${vrsta === 'ponuda' ? 'Upit je zaprimljen. Javljamo se još danas (radnim danom do 20:30).' : `Termin ${String(fd.get('datum')).split('-').reverse().join('. ')}. u ${slot} je rezervisan. Potvrdit ćemo ga pozivom ili porukom.`}</p></div>`
+      } catch (x) {
+        err.textContent = (x as Error).message === 'bez-api' || (x as Error).name === 'TypeError'
+          ? 'Upit trenutno ne možemo poslati. Nazovi nas na 051 433 750 ili piši na Viber 065 436 420.'
+          : (x as Error).message
+        err.hidden = false
+        btn.disabled = false; btn.textContent = label
+      }
+    })
+  })
+</script>

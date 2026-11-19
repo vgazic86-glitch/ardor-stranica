@@ -1,0 +1,16 @@
+{
+  "name": "ardor-web",
+  "private": true,
+  "type": "module",
+  "description": "Javna web stranica ARDOR namještaja (ardornamjestaj.com)",
+  "scripts": {
+    "dev": "astro dev --port 4321",
+    "build": "astro build",
+    "preview": "astro preview --port 4321",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "astro": "7.4.13",
+    "@astrojs/sitemap": "3.7.6"
+  }
+}

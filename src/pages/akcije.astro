@@ -1,0 +1,20 @@
+---
+import Base from '../layouts/Base.astro'
+import ProductCard from '../components/ProductCard.astro'
+import CtaBand from '../components/CtaBand.astro'
+import { getCatalog } from '../data/catalog'
+const { products } = await getCatalog()
+const sale = products.filter((p) => p.oldPrice).sort((a, b) => (b.oldPrice! - b.price) - (a.oldPrice! - a.price))
+---
+<Base title="Akcije i sniženja namještaja — ARDOR Banja Luka" description="Sniženi komadi iz salona: garniture, kreveti, spavaće sobe i kuhinje po akcijskim cijenama, dok traju zalihe. Dostava i montaža.">
+  <section class="page-head"><div class="wrap">
+    <nav class="crumbs" aria-label="Putanja"><a href="/">Početna</a><span>Akcije</span></nav>
+    <div class="eyebrow">Akcije</div><h1>Sniženo, dok traju zalihe.</h1>
+    <p class="lead">Izložbeni i odabrani komadi po nižoj cijeni. Akcijske cijene vrijede dok ima komada — rezerviši pozivom ili upitom.</p>
+  </div></section>
+  <section class="sec-tight" style="padding-top:0"><div class="wrap">
+    {sale.length ? <div class="products">{sale.map((p, i) => <ProductCard p={p} i={i} />)}</div>
+      : <div class="empty">Trenutno nema aktivnih akcija na webu. Pitaj u salonu za izložbene komade — često ih ima.<br><br><a class="btn btn-primary" href="/kontakt/?vrsta=posjet">Zakaži posjet</a></div>}
+  </div></section>
+  <CtaBand title="Prvi saznaj za akcije." text="Prati nas na Instagramu i Facebooku — akcije objavljujemo prvo tamo." primary={['Instagram', 'https://www.instagram.com/ardornamjestaj/']} secondary={['Facebook', 'https://www.facebook.com/ardorbanjaluka/']} />
+</Base>

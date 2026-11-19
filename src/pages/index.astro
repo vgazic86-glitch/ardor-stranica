@@ -1,0 +1,168 @@
+---
+import Base from '../layouts/Base.astro'
+import RoomGrid from '../components/RoomGrid.astro'
+import Steps from '../components/Steps.astro'
+import MaterialCards from '../components/MaterialCards.astro'
+import ProductCard from '../components/ProductCard.astro'
+import Advisor from '../components/Advisor.astro'
+import MaterialsAsk from '../components/MaterialsAsk.astro'
+import Services from '../components/Services.astro'
+import LeadForm from '../components/LeadForm.astro'
+import ContactInfo from '../components/ContactInfo.astro'
+import { getCatalog } from '../data/catalog'
+import { getCollection } from 'astro:content'
+
+const { products } = await getCatalog()
+const featured = (products.filter((p) => p.featured).length >= 3 ? products.filter((p) => p.featured) : products).slice(0, 6)
+const sale = products.filter((p) => p.oldPrice)
+const maxOff = sale.length ? Math.max(...sale.map((p) => Math.round((1 - p.price / p.oldPrice!) * 100))) : 0
+const posts = (await getCollection('inspiracija')).sort((a, b) => +b.data.datum - +a.data.datum).slice(0, 3)
+---
+<Base title="ARDOR namještaj Banja Luka — salon i namještaj po mjeri"
+  description="Salon od 6000 m² u Banjoj Luci: garniture, spavaće sobe, kuhinje i plakari po mjeri iz vlastitog pogona. Dostava, montaža, rate do 120 mj.">
+
+<section class="hero">
+  <div class="hero-media"><img src="/img/grande.jpg" alt="Uređen dnevni boravak s garniturom iz ARDOR salona" fetchpriority="high" width="1201" height="828"></div>
+  <div class="wrap">
+    <div class="eyebrow fade-in">Salon namještaja · Banja Luka · od 1996.</div>
+    <h1>
+      <span class="split-line"><span>Tvoj dom zaslužuje</span></span>
+      <span class="split-line"><span>namještaj koji ga</span></span>
+      <span class="split-line"><span>čini <em>boljim.</em></span></span>
+    </h1>
+    <p class="hero-sub fade-in">Kreiraj svoj dom po mjeri — uz stručne savjete, namještaj iz vlastitog pogona i potpunu podršku od ideje do montaže.</p>
+    <div class="hero-cta fade-in">
+      <a class="btn btn-primary" href="/kontakt/?vrsta=ponuda">Zatraži besplatnu ponudu <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="btn btn-ghost" href="#savjetnik">Isprobaj AI savjetnika</a>
+    </div>
+    <div class="hero-meta fade-in">
+      <div><strong>6000 m²</strong>izložbeni salon</div>
+      <div><strong>{new Date().getFullYear() - 1996} god.</strong>iskustva u namještaju</div>
+      <div><strong>Po mjeri</strong>iz vlastitog pogona</div>
+    </div>
+  </div>
+  <div class="scroll-hint">Skrolaj</div>
+</section>
+
+<section>
+  <div class="wrap story-grid">
+    <div>
+      <div class="eyebrow reveal">Naša priča</div>
+      <h2 class="reveal d1">Od 1996. uređujemo domove — komad po komad.</h2>
+      <p class="lead reveal d2" style="margin-top:28px">Počeli smo kao distributer namještaja, 2007. otvorili salon od 6000 m² u mirnom dijelu Obilićeva, a 2016. pokrenuli vlastiti pogon. Danas ti možemo ponuditi i gotov komad sa zalihe i namještaj napravljen tačno za tvoj prostor.</p>
+      <div class="stats reveal d3">
+        <div class="stat"><b data-count="1996">1996</b><span>godina osnivanja</span></div>
+        <div class="stat"><b data-count="6000">6000</b><span>m² izložbenog prostora</span></div>
+        <div class="stat"><b>2016</b><span>vlastiti proizvodni pogon</span></div>
+        <div class="stat"><b>120</b><span>mjeseci otplate uz partnerski kredit</span></div>
+      </div>
+      <a class="btn btn-ghost reveal" style="margin-top:30px" href="/o-nama/">Upoznaj ARDOR</a>
+    </div>
+    <div class="story-img reveal d2">
+      <img src="/img/volga.jpg" alt="Detalj fotelje — tkanina i šavovi" data-parallax="0.08" loading="lazy">
+      <div class="story-badge"><span><b>Ardor</b>od 1996.</span></div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="cats-head">
+      <div><div class="eyebrow reveal">Prostorije</div><h2 class="reveal d1">Kreni od prostorije<br>koju uređuješ.</h2></div>
+      <a class="btn btn-ghost reveal d2" href="/namjestaj/">Pogledaj katalog</a>
+    </div>
+    <RoomGrid />
+  </div>
+</section>
+
+<section class="custom">
+  <div class="wrap">
+    <div class="custom-top">
+      <div><div class="eyebrow reveal">Namještaj po mjeri</div><h2 class="reveal d1">Svaki centimetar tvog prostora — iskorišten.</h2></div>
+      <div class="reveal d2"><p class="lead">Kuhinje, ugradbeni plakari, američki ormari i komode iz našeg pogona. Dolazimo na mjerenje, crtamo 3D prijedlog i montiramo — jedan tim od prve skice do zadnjeg šarafa.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap"><a class="btn btn-primary" href="/kontakt/?vrsta=mjerenje">Zakaži besplatno mjerenje</a><a class="btn btn-ghost" href="/namjestaj-po-mjeri/">Kako radimo</a></div></div>
+    </div>
+    <Steps />
+    <MaterialCards />
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="cats-head">
+      <div><div class="eyebrow reveal">Katalog</div><h2 class="reveal d1">Izdvojeno iz salona</h2></div>
+      <a class="btn btn-ghost reveal d2" href="/namjestaj/">Cijeli katalog</a>
+    </div>
+    <div class="products">{featured.map((p, i) => <ProductCard p={p} i={i} />)}</div>
+  </div>
+</section>
+
+{sale.length > 0 && (
+<section class="promo">
+  <div class="wrap">
+    <div class="promo-box reveal">
+      <img src={sale[0].images[0]} alt="" loading="lazy">
+      <div class="promo-in">
+        <div class="eyebrow">Akcija</div>
+        <h2>Do −{maxOff} % na odabrane komade iz salona</h2>
+        <p style="color:#D9CCBA;margin:18px 0 28px">{sale.length} {sale.length === 1 ? 'komad' : 'komada'} po sniženoj cijeni, dok traju zalihe.</p>
+        <a class="btn btn-primary" href="/akcije/">Pogledaj akcijske komade</a>
+      </div>
+    </div>
+  </div>
+  <div class="marquee" aria-hidden="true"><div class="marquee-track">{[0, 1].map(() => <><span>Dostava i montaža</span><span>Mjerenje u tvom domu</span><span>Garancija</span><span>Otplata do 120 mjeseci</span><span>Vlastita proizvodnja</span></>)}</div></div>
+</section>
+)}
+
+<section class="ai" id="savjetnik">
+  <div class="wrap ai-grid">
+    <div>
+      <div class="eyebrow reveal">AI prostorni savjetnik</div>
+      <h2 class="reveal d1">Ne znaš odakle krenuti? Pet pitanja i imaš plan.</h2>
+      <p class="lead reveal d2" style="margin-top:24px">Odgovori na nekoliko jednostavnih pitanja, a savjetnik predloži stil, paletu boja, raspored i komade iz naše ponude. Zatim te naš dizajner čeka na besplatnom savjetovanju u salonu.</p>
+      <div class="reveal d3" style="margin-top:30px">
+        <div class="ai-feature"><span class="n">01</span><div><b>Prostorija, kvadratura, stil</b><span>Prijedlog se prilagodi tvom prostoru, ne obrnuto.</span></div></div>
+        <div class="ai-feature"><span class="n">02</span><div><b>Budžet bez iznenađenja</b><span>Komadi iz ponude koji stanu u iznos koji si odredio.</span></div></div>
+        <div class="ai-feature"><span class="n">03</span><div><b>Dizajner nastavlja gdje AI stane</b><span>Jednim klikom zakazuješ razgovor s našim dizajnerom.</span></div></div>
+      </div>
+      <div class="reveal"><MaterialsAsk /></div>
+    </div>
+    <div class="reveal d2"><Advisor products={products} /></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow reveal">Uz svaki komad</div>
+    <h2 class="reveal d1">Brinemo i nakon kupovine.</h2>
+    <Services />
+  </div>
+</section>
+
+{posts.length > 0 && (
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="cats-head" style="margin-bottom:0">
+      <div><div class="eyebrow reveal">Inspiracija i savjeti</div><h2 class="reveal d1">Ideje za dom, bez lutanja.</h2></div>
+      <a class="btn btn-ghost reveal d2" href="/inspiracija/">Svi članci</a>
+    </div>
+    <div class="posts">
+      {posts.map((p, i) => (
+        <a class:list={['post reveal', `d${i}`]} href={`/inspiracija/${p.id}/`}><div class="p-img"><img src={p.data.slika} alt="" loading="lazy"></div><div class="post-meta">{p.data.tema} · {p.data.citanje} min čitanja</div><h3>{p.data.naslov}</h3></a>
+      ))}
+    </div>
+  </div>
+</section>
+)}
+
+<section class="contact" id="kontakt">
+  <div class="wrap contact-grid">
+    <div>
+      <div class="eyebrow reveal">Kontakt i showroom</div>
+      <h2 class="reveal d1">Dođi, sjedni, isprobaj.</h2>
+      <ContactInfo />
+    </div>
+    <div class="reveal d2"><LeadForm /></div>
+  </div>
+</section>
+</Base>

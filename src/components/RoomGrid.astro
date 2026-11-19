@@ -1,0 +1,12 @@
+---
+import { ROOMS } from '../data/site'
+const size = ['big', 'mid', 'mid', 'sm', 'sm', 'sm', 'sm', 'sm', 'sm']
+---
+<div class="cats">
+  {ROOMS.map((r, i) => (
+    <a class:list={['cat', size[i], 'reveal', `d${i % 3}`, { pattern: !r.img, t2: !r.img && i % 2 === 0 }]} href={`/namjestaj/${r.key}/`}>
+      {r.img && <img src={`/img/${r.img}.jpg`} alt="" loading="lazy" style={r.imgPos ? `object-position:${r.imgPos}` : undefined}>}
+      <div class="cat-txt"><div><h3>{r.name}</h3><small>{r.short}</small></div><span class="arrow">→</span></div>
+    </a>
+  ))}
+</div>

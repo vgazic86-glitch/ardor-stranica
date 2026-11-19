@@ -1,0 +1,33 @@
+---
+/** Podstranica usluge po mjeri (kuhinje, plakari): hero, prednosti, primjeri iz kataloga, pitanja, obrazac. */
+import Steps from './Steps.astro'
+import LeadForm from './LeadForm.astro'
+import ProductCard from './ProductCard.astro'
+import type { WebProduct } from '../data/catalog'
+interface Props { name: string; img: string; imgPos?: string; h1: string; sub: string; benefits: string[]; faq: [string, string][]; products: WebProduct[]; room: string }
+const { name, img, imgPos, h1, sub, benefits, faq, products, room } = Astro.props
+---
+<section class="hero short">
+  <div class="hero-media"><img src={img} alt={name} style={imgPos ? `object-position:${imgPos}` : undefined}></div>
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Putanja"><a href="/">Početna</a><span><a href="/namjestaj-po-mjeri/">Po mjeri</a></span><span>{name}</span></nav>
+    <div class="eyebrow">{name} po mjeri · Banja Luka</div>
+    <h1>{h1}</h1>
+    <p class="hero-sub">{sub}</p>
+    <div class="hero-cta"><a class="btn btn-primary" href="#upit">Zakaži besplatno mjerenje</a><a class="btn btn-ghost" href={`/namjestaj/${room}/`}>Pogledaj primjere</a></div>
+  </div>
+</section>
+<section><div class="wrap grid-2" style="align-items:start">
+  <div><div class="eyebrow reveal">Zašto po mjeri</div><h2 class="reveal d1">Što dobiješ</h2></div>
+  <ul class="list-check reveal d2">{benefits.map((b) => <li set:html={b} />)}</ul>
+</div></section>
+<section class="custom"><div class="wrap"><div class="eyebrow reveal">Proces</div><h2 class="reveal d1" style="margin-bottom:50px">Šest koraka do gotovog.</h2><Steps /></div></section>
+{products.length > 0 && <section><div class="wrap"><div class="eyebrow reveal">Iz salona</div><h2 class="reveal d1" style="margin-bottom:40px">Primjeri koje možeš vidjeti uživo</h2><div class="products">{products.slice(0, 3).map((p, i) => <ProductCard p={p} i={i} />)}</div></div></section>}
+<section class="sec-tight" style="padding-top:0"><div class="wrap grid-2" style="align-items:start">
+  <div><div class="eyebrow">Česta pitanja</div><h2>{name}: pitanja kupaca</h2></div>
+  <div class="faq">{faq.map(([q, a], i) => <details open={i === 0}><summary>{q}</summary><p>{a}</p></details>)}</div>
+</div></section>
+<section class="contact" id="upit"><div class="wrap contact-grid">
+  <div><div class="eyebrow">Besplatno mjerenje</div><h2>Pošalji mjere ili nas pozovi da izmjerimo.</h2><p class="lead" style="margin-top:18px">Dodaj fotografiju prostora — javljamo se isti radni dan s terminom.</p></div>
+  <LeadForm vrsta="mjerenje" prostorija={name === 'Kuhinje' ? 'Kuhinja' : 'Ugradbeni plakar'} />
+</div></section>

@@ -1,0 +1,108 @@
+---
+/** AI prostorni savjetnik: 5 pitanja → stil, paleta, komadi iz ponude, savjeti. */
+import type { WebProduct } from '../data/catalog'
+interface Props { products: WebProduct[]; bookHref?: string }
+const { products, bookHref = '/kontakt/?vrsta=posjet' } = Astro.props
+const slim = products.map((p) => ({ id: p.id, slug: p.slug, name: p.name, type: p.type, room: p.room, style: p.style, price: p.price, img: p.images[0], avail: p.avail }))
+---
+<div class="ai-card" id="aiCard" data-book={bookHref}></div>
+<script type="application/json" id="advisorData" set:html={JSON.stringify(slim)} />
+<script>
+  const API = (import.meta.env.PUBLIC_ARDOR_API_URL || '').replace(/\/$/, '')
+  type P = { id: string; slug: string; name: string; type: string; room: string; style: string; price: number; img: string; avail: string }
+  const P: P[] = JSON.parse(document.getElementById('advisorData')!.textContent || '[]')
+  const card = document.getElementById('aiCard')!
+  const km = (n: number) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' KM'
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!)
+
+  const ROOM_MAP: Record<string, string[]> = { dnevni: ['dnevni-boravak'], spavaca: ['spavaca-soba', 'lezajevi-i-madraci', 'ormari-i-plakari'], kuhinja: ['kuhinja', 'trpezarija'], djecja: ['djecja-soba'], hodnik: ['hodnik', 'ormari-i-plakari'], ured: ['ured'] }
+  const Q = [
+    { k: 'room', q: 'Koju prostoriju uređuješ?', o: [['dnevni', '🛋️', 'Dnevni boravak'], ['spavaca', '🛏️', 'Spavaća soba'], ['kuhinja', '🍳', 'Kuhinja'], ['djecja', '🧸', 'Dječja soba'], ['hodnik', '🚪', 'Hodnik / plakari'], ['ured', '💼', 'Ured']] },
+    { k: 'm2', q: 'Koliko je prostorija velika?', range: [6, 60, 18] },
+    { k: 'style', q: 'Koji stil ti je najbliži?', o: [['moderni', '◼️', 'Moderni', 'čiste linije, mat i sjaj'], ['skandinavski', '🌿', 'Skandinavski', 'svijetlo drvo, toplo, jednostavno'], ['klasicni', '🏛️', 'Klasični', 'profili, toplina, elegancija'], ['industrijski', '🧱', 'Industrijski', 'tamno drvo, metal, beton']] },
+    { k: 'budget', q: 'Koji je okvirni budžet?', o: [['1500', '💶', 'do 1.500 KM'], ['3500', '💶', '1.500 – 3.500 KM'], ['7000', '💶', '3.500 – 7.000 KM'], ['99999', '✨', 'preko 7.000 KM']] },
+    { k: 'scope', q: 'Trebaš kompletno uređenje ili jedan komad?', o: [['sve', '🏠', 'Kompletno uređenje', 'cijela prostorija'], ['komad', '🪑', 'Jedan ili dva komada', 'dopuna postojećem']] },
+  ] as const
+  const PAL: Record<string, { n: string; c: [string, string][] }> = {
+    moderni: { n: 'Grafit i toplo drvo', c: [['#2B2A28', 'grafit'], ['#E9E4DC', 'krem'], ['#A9784A', 'orah'], ['#F15A29', 'akcent']] },
+    skandinavski: { n: 'Lan, hrast i kadulja', c: [['#F1ECE3', 'lan'], ['#D6C2A2', 'hrast'], ['#9CAF95', 'kadulja'], ['#4A4A48', 'ugljen']] },
+    klasicni: { n: 'Krem, karamel i zelena', c: [['#F4EEE2', 'krem'], ['#C19A6B', 'karamel'], ['#2F4A3A', 'duboka zelena'], ['#8A6A4A', 'orah']] },
+    industrijski: { n: 'Beton, terakota i crni metal', c: [['#8E8C88', 'beton'], ['#B8573A', 'terakota'], ['#5A3E2B', 'tamno drvo'], ['#1F1F1F', 'crni metal']] },
+  }
+  const TIPS: Record<string, (small: boolean) => string[]> = {
+    dnevni: (s) => [s ? 'Garnitura na nogicama i bez masivnih rukohvata vizualno otvara prostor.' : 'Ugaona garnitura podijelit će dnevni boravak na zonu za odmor i prolaz.', 'Ostavi barem 80 cm prolaza između garniture i stolića.', 'Tepih neka bude dovoljno velik da prednje noge garniture stoje na njemu.'],
+    spavaca: (s) => [s ? 'Klizna vrata ormara štede oko 60 cm ispred ormara.' : 'Ormar uz zid nasuprot prozoru, krevet uzglavljem uz puni zid.', 'Krevet s podizanjem rješava posteljinu i sezonsku odjeću.', 'S obje strane kreveta ostavi barem 60 cm.'],
+    kuhinja: (s) => [s ? 'Svijetli frontovi visokog sjaja i elementi do stropa čine kuhinju većom.' : 'Razmisli o otoku ili šanku — dobiješ radnu plohu i mjesto za doručak.', 'Radni trokut: sudoper, ploča i frižider na 1,2–2,7 m razmaka.', 'LED rasvjeta ispod gornjih elemenata — najčešće hvaljena sitnica.'],
+    djecja: () => ['Biraj namještaj koji raste s djetetom: krevet 120 cm, radni stol s podesivom visinom.', 'Zaobljeni rubovi i ormari pričvršćeni za zid su obavezni.', 'Ostavi praznu podnu površinu za igru — barem 2 × 2 m.'],
+    hodnik: () => ['Ugradbeni plakar od poda do stropa ne skuplja prašinu i nosi znatno više stvari.', 'U hodniku do 120 cm širine biraj dubinu 35–40 cm i klizna vrata.', 'Ogledalo na vratima plakara optički udvostruči hodnik.'],
+    ured: () => ['Stol okomito na prozor — bez odsjaja na ekranu.', 'Za rad od kuće: barem 140 cm stola i ergonomska stolica.', 'Zatvoreni ormarići ispod, otvorene police iznad.'],
+  }
+  const ans: Record<string, string | number> = {}
+  let qi = 0
+
+  function drawQ() {
+    const q = Q[qi]
+    const prog = `<div class="ai-progress">${Q.map((_, i) => `<i class="${i <= qi ? 'on' : ''}"></i>`).join('')}</div>`
+    let body: string
+    if ('range' in q) {
+      const v = Number(ans[q.k] || q.range[2])
+      body = `<div class="range-val"><span class="m2v">${v}</span> m²</div><input class="range-big" type="range" min="${q.range[0]}" max="${q.range[1]}" value="${v}" aria-label="Kvadratura"><div style="display:flex;justify-content:space-between;color:var(--muted);font-size:13px"><span>${q.range[0]} m²</span><span>${q.range[1]} m²</span></div><div class="ai-nav"><button class="link-btn back">← Nazad</button><button class="btn btn-primary next">Dalje →</button></div>`
+    } else {
+      body = `<div class="opts">${q.o.map(([v, em, t, s]: readonly string[]) => `<button class="opt" data-v="${v}"><span class="em">${em}</span><span>${t}${s ? `<small>${s}</small>` : ''}</span></button>`).join('')}</div><div class="ai-nav">${qi ? '<button class="link-btn back">← Nazad</button>' : '<span style="color:var(--muted);font-size:13px">Pitanje 1 od 5 · traje 30 sekundi</span>'}<span></span></div>`
+    }
+    card.innerHTML = `${prog}<div class="ai-step"><div class="ai-q">${q.q}</div>${body}</div>`
+    card.querySelectorAll<HTMLButtonElement>('.opt').forEach((b) => b.addEventListener('click', () => { ans[q.k] = b.dataset.v!; step(1) }))
+    const r = card.querySelector<HTMLInputElement>('.range-big')
+    if (r) { r.addEventListener('input', () => { card.querySelector('.m2v')!.textContent = r.value }); card.querySelector('.next')!.addEventListener('click', () => { ans.m2 = Number(r.value); step(1) }) }
+    card.querySelector('.back')?.addEventListener('click', () => step(-1))
+  }
+  function step(d: number) { qi += d; if (qi >= Q.length) void think(); else drawQ() }
+
+  function pick() {
+    const rooms = ROOM_MAP[String(ans.room)] || []
+    const b = Number(ans.budget)
+    let list = P.filter((p) => rooms.includes(p.room))
+    list.sort((a, c) => Number(c.style === ans.style) - Number(a.style === ans.style) || Number(a.price > b) - Number(c.price > b) || a.price - c.price)
+    if (!list.length) list = P.filter((p) => p.style === ans.style)
+    return list.slice(0, 6)
+  }
+
+  async function think() {
+    card.innerHTML = `<div class="ai-step" style="display:grid;place-items:center;min-height:400px;text-align:center"><div><div class="typing"><i></i><i></i><i></i></div><p style="margin-top:20px;color:var(--muted)">Savjetnik slaže prijedlog za tvojih ${ans.m2} m²…</p></div></div>`
+    const cands = pick()
+    let ai: { text?: string; tips?: string[]; ids?: string[] } | null = null
+    if (API) {
+      try {
+        const r = await fetch(`${API}/api/web/savjetnik`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ odgovori: ans, kandidati: cands.map((p) => ({ id: p.id, naziv: p.name, tip: p.type, stil: p.style, cijena: p.price })) }), signal: AbortSignal.timeout(20000) })
+        if (r.ok) ai = await r.json()
+      } catch { ai = null }
+    } else await new Promise((r) => setTimeout(r, 1200))
+    result(cands, ai)
+  }
+
+  function result(cands: P[], ai: { text?: string; tips?: string[]; ids?: string[] } | null) {
+    const pal = PAL[String(ans.style)]
+    const small = Number(ans.m2) < 14
+    const recs = (ai?.ids?.length ? ai.ids.map((id) => cands.find((p) => p.id === id)).filter(Boolean) as P[] : cands).slice(0, 3)
+    const tips = ai?.tips?.length ? ai.tips.slice(0, 4) : TIPS[String(ans.room)](small)
+    const scope = ans.scope === 'sve' ? 'kompletno uređenje' : 'jedan ili dva komada'
+    const roomName = (Q[0].o.find((o) => o[0] === ans.room) || [])[2]
+    const summary = `AI savjetnik: ${roomName}, ${ans.m2} m², stil ${ans.style}, budžet do ${Number(ans.budget) > 50000 ? 'preko 7.000' : ans.budget} KM, ${scope}. Paleta: ${pal.n}. Prijedlozi: ${recs.map((r) => r.name).join(', ') || '—'}.`
+    try { sessionStorage.setItem('ardor.savjet', summary) } catch { /* nema veze */ }
+    window.ardorTrack?.('ai_savjet_zavrsen', { prostorija: ans.room, stil: ans.style })
+    card.innerHTML = `<div class="ai-step">
+      <div class="eyebrow" style="margin-bottom:10px">Tvoj prijedlog</div>
+      <div class="ai-q" style="margin-bottom:6px">${pal.n} za ${ans.m2} m² · ${scope}</div>
+      ${ai?.text ? `<p style="color:var(--muted);margin:8px 0 0">${esc(ai.text)}</p>` : ''}
+      <div class="palette">${pal.c.map(([c]) => `<i style="background:${c}"></i>`).join('')}</div>
+      <div class="palette-names">${pal.c.map(([, n]) => `<span>${n}</span>`).join('')}</div>
+      ${recs.length ? `<div style="margin-top:18px;font-weight:500">Iz naše ponude</div><div class="rec-list">${recs.map((r) => `<a class="rec" href="/namjestaj/${r.room}/${r.slug}/" style="text-decoration:none"><img src="${r.img}" alt="" loading="lazy"><div><b>${esc(r.name)}</b><br>od ${km(r.price)}</div></a>`).join('')}</div>` : ''}
+      <div style="font-weight:500">Savjeti za raspored</div>
+      <ul class="tips">${tips.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>
+      <div class="ai-nav" style="flex-wrap:wrap;gap:12px"><button class="link-btn again">↺ Kreni ispočetka</button><a class="btn btn-primary book" href="${card.dataset.book}">Zakaži besplatno savjetovanje</a></div>
+    </div>`
+    card.querySelector('.again')!.addEventListener('click', () => { qi = 0; Object.keys(ans).forEach((k) => delete ans[k]); drawQ() })
+    card.querySelector('.book')!.addEventListener('click', () => document.dispatchEvent(new CustomEvent('ardor:vrsta', { detail: 'posjet' })))
+  }
+  drawQ()
+</script>

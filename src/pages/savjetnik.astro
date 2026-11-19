@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro'
+import Advisor from '../components/Advisor.astro'
+import MaterialsAsk from '../components/MaterialsAsk.astro'
+import LeadForm from '../components/LeadForm.astro'
+import { getCatalog } from '../data/catalog'
+const { products } = await getCatalog()
+---
+<Base title="Besplatni AI savjetnik za uređenje doma | ARDOR" description="Odgovori na 5 pitanja i dobij stil, paletu boja, raspored i komade za svoju prostoriju. Uz besplatno savjetovanje u salonu.">
+  <section class="ai" style="padding-top:150px"><div class="wrap ai-grid">
+    <div>
+      <nav class="crumbs" aria-label="Putanja"><a href="/">Početna</a><span>AI savjetnik</span></nav>
+      <div class="eyebrow">AI prostorni savjetnik</div>
+      <h1 style="font-size:clamp(40px,5.4vw,72px)">Pet pitanja do plana za tvoju prostoriju.</h1>
+      <p class="lead" style="margin-top:24px">Savjetnik predloži stil, paletu boja, raspored i komade iz naše ponude koji stanu u tvoj budžet. Prijedlog je početak — naš dizajner ga u salonu pretvara u konkretno rješenje.</p>
+      <MaterialsAsk />
+      <p class="note" style="margin-top:24px">Savjetnik ne traži ime ni kontakt. Odgovore koristimo samo za prijedlog; ako zakažeš savjetovanje, šaljemo ih dizajneru da bude spreman.</p>
+    </div>
+    <Advisor products={products} bookHref="#zakazi" />
+  </div></section>
+  <section class="contact" id="zakazi"><div class="wrap contact-grid">
+    <div><div class="eyebrow">Besplatno savjetovanje</div><h2>Nastavi s dizajnerom u salonu.</h2><p class="lead" style="margin-top:18px">Izaberi dan i termin. Tvoj prijedlog iz savjetnika automatski šaljemo uz rezervaciju.</p></div>
+    <LeadForm vrsta="posjet" />
+  </div></section>
+</Base>

@@ -1,0 +1,13 @@
+---
+import { SITE } from '../data/site'
+interface Props { emails?: number }
+const { emails = 3 } = Astro.props
+---
+<ul class="c-list reveal d1">
+  <li><span>Adresa</span><a href={SITE.mapUrl} target="_blank" rel="noopener">{SITE.street}, {SITE.zip} {SITE.city}</a></li>
+  <li><span>Telefon</span><a href={SITE.phoneHref} data-ev="poziv">{SITE.phone}</a></li>
+  <li><span>Mobitel / Viber / WhatsApp</span><a href={SITE.mobileHref} data-ev="poziv">{SITE.mobile}</a></li>
+  {SITE.hours.map((h) => <li><span>{h.label}</span>{h.value}</li>)}
+  {SITE.emails.slice(0, emails).map((e) => <li><span>{e.label}</span><a href={`mailto:${e.value}`}>{e.value}</a></li>)}
+</ul>
+<div class="map reveal"><iframe title="Karta: ARDOR salon" loading="lazy" src={SITE.mapEmbed} referrerpolicy="no-referrer-when-downgrade"></iframe></div>

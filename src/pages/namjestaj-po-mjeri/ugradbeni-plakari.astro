@@ -1,0 +1,20 @@
+---
+import Base from '../../layouts/Base.astro'
+import CustomLanding from '../../components/CustomLanding.astro'
+import { getCatalog } from '../../data/catalog'
+const { products } = await getCatalog()
+const faq: [string, string][] = [
+  ['Klizna ili krilna vrata?', 'Klizna štede oko 60 cm ispred ormara — idealna za manje sobe i hodnike. Krilna daju pristup cijeloj unutrašnjosti odjednom.'],
+  ['Koja dubina za hodnik?', 'Za uske hodnike 35–40 cm s kliznim vratima; standardna dubina za garderobu je 60 cm.'],
+  ['Može li plakar u potkrovlje?', 'Može — kosi strop je upravo mjesto gdje plakar po mjeri najviše dobije nad gotovim ormarom.'],
+  ['Kako se planira unutrašnjost?', 'Prema tvom popisu stvari: šipke na dvije visine, ladice, police, cipelarnik, mjesto za usisivač i kofere.'],
+]
+const faqLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }
+---
+<Base title="Ugradbeni plakari po mjeri Banja Luka | ARDOR" description="Plakari od poda do stropa, prilagođeni tvojim dimenzijama. Klizna vrata, ogledala, unutrašnji raspored po želji. Mjerenje besplatno." image="/img/chilly.jpg" schema={[faqLd]}>
+  <CustomLanding name="Ugradbeni plakari" img="/img/chilly.jpg" imgPos="85% 50%" room="ormari-i-plakari"
+    h1="Plakari prilagođeni tvojim dimenzijama — od poda do stropa."
+    sub="Stane i u nišu u koju ništa gotovo ne stane. Klizna ili krilna vrata, ogledala i unutrašnjost po tvom popisu stvari."
+    benefits={['<b>Nema prašine na vrhu</b> — plakar ide do stropa.', '<b>Kosi zidovi i potkrovlja</b> iskorišteni do zadnjeg centimetra.', '<b>Plitki plakari za hodnik</b> od 35 cm dubine.', '<b>Ogledalo na vratima</b> optički udvostruči prostor.', '<b>Unutrašnji raspored po mjeri</b> — šipke, ladice, police, cipelarnik.']}
+    faq={faq} products={products.filter((p) => p.room === 'ormari-i-plakari' || p.room === 'spavaca-soba')} />
+</Base>

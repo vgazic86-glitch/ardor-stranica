@@ -1,0 +1,53 @@
+---
+import Base from '../layouts/Base.astro'
+import Services from '../components/Services.astro'
+import CtaBand from '../components/CtaBand.astro'
+const years = new Date().getFullYear() - 1996
+---
+<Base title="O nama — ARDOR namještaj Banja Luka od 1996." description="ARDOR od 1996.: salon od 6000 m² u Obilićevu, vlastiti pogon za namještaj po mjeri od 2016., dostava, montaža i garancija." image="/img/volga.jpg">
+  <section class="hero short">
+    <div class="hero-media"><img src="/img/isabel.jpg" alt="Dnevni boravak iz ARDOR salona"></div>
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Putanja"><a href="/">Početna</a><span>O nama</span></nav>
+      <div class="eyebrow">O nama</div>
+      <h1>Od 1996. uređujemo domove — komad po komad.</h1>
+      <p class="hero-sub">Ne prodajemo komad — pomažemo ti da dom proradi.</p>
+    </div>
+  </section>
+  <section><div class="wrap story-grid">
+    <div>
+      <div class="eyebrow reveal">Priča</div>
+      <h2 class="reveal d1">{years} godina, jedan salon, vlastiti pogon.</h2>
+      <div class="prose reveal d2" style="margin-top:24px">
+        <p>ARDOR je osnovan 1996. u Banjoj Luci kao distributer namještaja. Godinama smo dovozili namještaj vodećih proizvođača i učili što kupcima zaista treba — i što im najčešće nedostaje.</p>
+        <p>2007. smo otvorili distributivno-prodajni centar od 6000 m² u mirnom dijelu Obilićeva. Tu možeš sjesti na svaku garnituru, leći na madrac i otvoriti svaki ormar prije nego odlučiš.</p>
+        <p>2016. smo pokrenuli vlastiti proizvodni pogon. Od tada radimo kuhinje, ugradbene plakare, američke ormare i komode tačno po mjeri prostora — od mjerenja i 3D prijedloga do montaže.</p>
+      </div>
+      <div class="stats reveal d3">
+        <div class="stat"><b data-count="1996">1996</b><span>osnivanje</span></div>
+        <div class="stat"><b>2007</b><span>salon od 6000 m²</span></div>
+        <div class="stat"><b>2016</b><span>vlastiti pogon</span></div>
+        <div class="stat"><b>1</b><span>tim od ideje do montaže</span></div>
+      </div>
+    </div>
+    <div class="story-img reveal d2"><img src="/img/volga.jpg" alt="Detalj tapeciranog namještaja" data-parallax="0.08" loading="lazy"></div>
+  </div></section>
+  <section class="custom"><div class="wrap">
+    <div class="eyebrow reveal">Šta nas razlikuje</div>
+    <h2 class="reveal d1">Pod jednim krovom</h2>
+    <div class="grid-2" style="margin-top:40px;align-items:start">
+      <ul class="list-check reveal">
+        <li><b>Gotov namještaj</b> vodećih proizvođača — garniture, spavaće sobe, trpezarije, uredi.</li>
+        <li><b>Namještaj po mjeri</b> iz našeg pogona u Banjoj Luci.</li>
+        <li><b>Studio spavanja</b> — madraci i jastuci koje isprobaš prije kupovine.</li>
+      </ul>
+      <ul class="list-check reveal d1">
+        <li><b>Dostava i montaža</b> našim timom.</li>
+        <li><b>Garancija</b> i brzo rješavanje reklamacija.</li>
+        <li><b>Plaćanje na rate</b> do 120 mjeseci uz partnerski kredit.</li>
+      </ul>
+    </div>
+  </div></section>
+  <section><div class="wrap"><div class="eyebrow reveal">Usluge</div><h2 class="reveal d1">Brinemo i nakon kupovine.</h2><Services /></div></section>
+  <CtaBand title="Dođi upoznati salon." text="Radnim danom 08:00–20:30, subotom 08:00–19:00. Vojvode Pere Kreće 21, Banja Luka." primary={['Zakaži posjet', '/kontakt/?vrsta=posjet']} secondary={['Kako doći', '/kontakt/']} />
+</Base>

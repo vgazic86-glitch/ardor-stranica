@@ -1,0 +1,37 @@
+---
+import Base from '../../layouts/Base.astro'
+import ProductCard from '../../components/ProductCard.astro'
+import { getCollection, render } from 'astro:content'
+import { getCatalog } from '../../data/catalog'
+export async function getStaticPaths() {
+  const posts = await getCollection('inspiracija')
+  return posts.map((p) => ({ params: { slug: p.id }, props: { post: p } }))
+}
+const { post } = Astro.props
+const { Content } = await render(post)
+const { products } = await getCatalog()
+const related = post.data.prostorija ? products.filter((p) => p.room === post.data.prostorija).slice(0, 2) : []
+const d = post.data.datum
+const datum = `${d.getDate()}. ${d.getMonth() + 1}. ${d.getFullYear()}.`
+const schema = [{ '@context': 'https://schema.org', '@type': 'Article', headline: post.data.naslov, description: post.data.opis, image: `https://www.ardornamjestaj.com${post.data.slika}`, datePublished: d.toISOString(), author: { '@type': 'Organization', name: post.data.autor }, publisher: { '@id': 'https://www.ardornamjestaj.com/#salon' } }]
+---
+<Base title={`${post.data.naslov} | ARDOR`} description={post.data.opis} image={post.data.slika} schema={schema}>
+  <section class="hero short">
+    <div class="hero-media"><img src={post.data.slika} alt=""></div>
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Putanja"><a href="/">Početna</a><span><a href="/inspiracija/">Inspiracija</a></span><span>{post.data.tema}</span></nav>
+      <div class="eyebrow">{post.data.tema} · {post.data.citanje} min čitanja · {datum}</div>
+      <h1>{post.data.naslov}</h1>
+    </div>
+  </section>
+  <section class="sec-tight"><div class="wrap article-grid">
+    <article class="prose"><Content /></article>
+    <aside class="aside-card">
+      <div class="eyebrow" style="margin-bottom:10px">Razgovaraj s dizajnerom</div>
+      <p style="margin:0 0 16px">Imaš pitanje za svoj prostor? Ponesi mjere u salon — savjet je besplatan.</p>
+      <a class="btn btn-primary" style="width:100%;justify-content:center" href="/kontakt/?vrsta=posjet">Zakaži posjet</a>
+      <a class="btn btn-ghost" style="width:100%;justify-content:center;margin-top:10px" href="/savjetnik/">AI savjetnik</a>
+    </aside>
+  </div></section>
+  {related.length > 0 && <section class="sec-tight" style="padding-top:0"><div class="wrap"><div class="eyebrow">Iz teksta u salon</div><h2 style="margin-bottom:40px">Pogledaj uživo</h2><div class="products">{related.map((p, i) => <ProductCard p={p} i={i} />)}</div></div></section>}
+</Base>

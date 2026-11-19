@@ -1,0 +1,74 @@
+---
+import Base from '../../../layouts/Base.astro'
+import LeadForm from '../../../components/LeadForm.astro'
+import ProductCard from '../../../components/ProductCard.astro'
+import { getCatalog, type WebProduct } from '../../../data/catalog'
+import { COLORS, MATERIALS, STYLES, km, roomByKey } from '../../../data/site'
+
+export async function getStaticPaths() {
+  const { products } = await getCatalog()
+  return products.map((p) => ({ params: { room: p.room, slug: p.slug }, props: { p, all: products } }))
+}
+const { p, all } = Astro.props as { p: WebProduct; all: WebProduct[] }
+const room = roomByKey(p.room)!
+const similar = all.filter((x) => x.room === p.room && x.id !== p.id).slice(0, 3)
+const abs = (u: string) => new URL(u, 'https://www.ardornamjestaj.com').href
+const schema = [
+  {
+    '@context': 'https://schema.org', '@type': 'Product', name: `${p.name} — ${p.type}`, description: p.description || `${p.type} ${p.name}`,
+    image: p.images.map(abs), brand: { '@type': 'Brand', name: 'ARDOR' }, category: room.name,
+    offers: { '@type': 'Offer', priceCurrency: 'BAM', price: p.price, availability: p.avail === 'stanje' ? 'https://schema.org/InStock' : 'https://schema.org/PreOrder', url: abs(Astro.url.pathname), seller: { '@id': 'https://www.ardornamjestaj.com/#salon' } },
+  },
+  { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Početna', item: abs('/') },
+    { '@type': 'ListItem', position: 2, name: room.name, item: abs(`/namjestaj/${room.key}/`) },
+    { '@type': 'ListItem', position: 3, name: p.name } ] },
+]
+const desc = `${p.name}: ${p.dimensions}, ${p.materials}. ${p.avail === 'stanje' ? 'Odmah sa zalihe' : 'Po narudžbi'}. Dostava i montaža, plaćanje na rate. Zatraži ponudu.`.slice(0, 158)
+---
+<Base title={`${p.name} — ${p.type} | ARDOR Banja Luka`} description={desc} image={p.images[0]} schema={schema}>
+  <section class="page-head" style="padding-bottom:0">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Putanja"><a href="/">Početna</a><span><a href="/namjestaj/">Katalog</a></span><span><a href={`/namjestaj/${room.key}/`}>{room.name}</a></span><span>{p.name}</span></nav>
+    </div>
+  </section>
+  <section class="sec-tight" style="padding-top:20px"><div class="wrap pd">
+    <div class="pd-gallery">
+      <div class="pd-main"><img id="pdMain" src={p.images[0]} alt={`${p.name} — ${p.type}`} width="1201" height="828"></div>
+      {p.images.length > 1 && <div class="pd-thumbs">{p.images.map((src, i) => <button type="button" class:list={{ on: i === 0 }} data-src={src} aria-label={`Fotografija ${i + 1}`}><img src={src} alt="" loading="lazy"></button>)}</div>}
+    </div>
+    <div class="pd-info pd-sticky">
+      <div class="eyebrow">{room.name}</div>
+      <h1>{p.name}</h1>
+      <div style="color:var(--muted)">{p.type}</div>
+      <div class="pd-price">{p.oldPrice && <s style="font-size:20px;color:var(--muted);margin-right:10px">{km(p.oldPrice)}</s>}od {km(p.price)}</div>
+      <div class="note">Cijena s PDV-om. Konačna cijena ovisi o izabranoj tkanini, dimenziji i opremi.</div>
+      <dl class="specs">
+        <dt>Mjere</dt><dd>{p.dimensions}</dd>
+        <dt>Materijal</dt><dd>{p.materials}</dd>
+        <dt>Stil</dt><dd>{STYLES[p.style]} · {COLORS[p.color]} · {MATERIALS[p.material]}</dd>
+        <dt>Dostupnost</dt><dd>{p.avail === 'stanje' ? '🟢 Odmah sa zalihe — dostava za nekoliko dana' : '🟡 Po narudžbi — rok javljamo uz ponudu'}</dd>
+        {p.swatches.length > 0 && <><dt>Boje</dt><dd><div class="swatches" style="margin:0">{p.swatches.map((c) => <i style={`background:${c}`}></i>)}</div></dd></>}
+      </dl>
+      {p.personal && <div class="personal">✦ <b>Personalizacija:</b> {p.personal}</div>}
+      <div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-primary" href="#upit">Zatraži ponudu</a><a class="btn btn-ghost" href="/kontakt/?vrsta=posjet">Pogledaj u salonu</a></div>
+      <ul class="list-check" style="margin-top:26px;font-size:15px">
+        <li>Dostava i montaža našim timom</li><li>Garancija na namještaj</li><li>Plaćanje na rate do 120 mjeseci — <a href="/placanje-na-rate/">izračunaj ratu</a></li>
+      </ul>
+    </div>
+  </div></section>
+  {p.description && <section class="sec-tight" style="padding-top:0"><div class="wrap"><div class="prose"><h2 style="margin-top:0">O ovom komadu</h2><p>{p.description}</p></div></div></section>}
+  <section class="contact sec-tight" id="upit"><div class="wrap contact-grid">
+    <div><div class="eyebrow">Upit za {p.name}</div><h2>Pošalji upit — javljamo se isti dan.</h2><p class="lead" style="margin-top:18px">Napiši koju tkaninu, boju ili dimenziju želiš. Ako trebaš drukčiju mjeru, provjerit ćemo može li se napraviti.</p></div>
+    <LeadForm proizvod={`${p.name} (${p.type})`} prostorija={room.name} />
+  </div></section>
+  {similar.length > 0 && <section class="sec-tight"><div class="wrap"><div class="eyebrow">Slično</div><h2 style="margin-bottom:40px">Iz iste prostorije</h2><div class="products">{similar.map((x, i) => <ProductCard p={x} i={i} />)}</div></div></section>}
+  <script>
+    const main = document.getElementById('pdMain') as HTMLImageElement | null
+    document.querySelectorAll<HTMLButtonElement>('.pd-thumbs button').forEach((b) => b.addEventListener('click', () => {
+      if (main) main.src = b.dataset.src!
+      document.querySelectorAll('.pd-thumbs button').forEach((x) => x.classList.toggle('on', x === b))
+    }))
+    addEventListener('load', () => window.ardorTrack?.('pregled_proizvoda', { naziv: document.querySelector('h1')?.textContent }))
+  </script>
+</Base>

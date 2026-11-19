@@ -1,0 +1,23 @@
+---
+import Base from '../layouts/Base.astro'
+import ContactInfo from '../components/ContactInfo.astro'
+import LeadForm from '../components/LeadForm.astro'
+import { SITE } from '../data/site'
+---
+<Base title="Kontakt i salon — Vojvode Pere Kreće 21, Banja Luka | ARDOR" description="Salon ARDOR: radnim danom 08:00–20:30, subotom 08:00–19:00. Tel. 051 433 750, Viber/WhatsApp 065 436 420. Zakaži posjet ili mjerenje.">
+  <section class="contact" style="padding-top:150px"><div class="wrap contact-grid">
+    <div>
+      <nav class="crumbs" aria-label="Putanja"><a href="/">Početna</a><span>Kontakt</span></nav>
+      <div class="eyebrow">Kontakt i showroom</div>
+      <h1 style="font-size:clamp(40px,5.4vw,72px)">Dođi, sjedni, isprobaj.</h1>
+      <p class="lead" style="margin-top:18px">Javi se pozivom, Viberom ili WhatsAppom — ili pošalji fotografiju prostorije i mjere, a mi ti isti dan javljamo prijedlog.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px">
+        <a class="btn btn-primary" href={SITE.phoneHref} data-ev="poziv">Nazovi</a>
+        <a class="btn btn-ghost" href={SITE.viber} data-ev="viber">Viber</a>
+        <a class="btn btn-ghost" href={SITE.whatsapp} target="_blank" rel="noopener" data-ev="whatsapp">WhatsApp</a>
+      </div>
+      <ContactInfo emails={6} />
+    </div>
+    <div><LeadForm /></div>
+  </div></section>
+</Base>

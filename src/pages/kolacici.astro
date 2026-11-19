@@ -1,0 +1,20 @@
+---
+import Base from '../layouts/Base.astro'
+---
+<Base title="Kolačići | ARDOR namještaj" description="Koje kolačiće koristi web stranica ARDOR namještaja i kako promijeniti postavke.">
+  <section class="page-head"><div class="wrap">
+    <nav class="crumbs" aria-label="Putanja"><a href="/">Početna</a><span>Kolačići</span></nav>
+    <h1>Kolačići</h1>
+  </div></section>
+  <section class="sec-tight" style="padding-top:0"><div class="wrap prose">
+    <h2>Nužni</h2>
+    <p>Pamte tvoj izbor teme (svijetla/tamna) i izbor kolačića. Spremaju se samo u tvom pregledniku i ne šalju se nikome.</p>
+    <h2>Analitički — Google Analytics 4</h2>
+    <p>Samo uz pristanak. Mjere koliko je posjeta i koje stranice pomažu kupcima, bez imena i kontakata. Bez pristanka Google ne sprema kolačiće (Consent Mode).</p>
+    <h2>Marketinški — Meta Pixel</h2>
+    <p>Samo uz pristanak. Omogućuju da oglasi na Facebooku i Instagramu budu korisniji i mjere njihov učinak.</p>
+    <h2>Promjena izbora</h2>
+    <p><button class="btn btn-primary" id="openCookies" type="button">Otvori postavke kolačića</button></p>
+  </div></section>
+  <script>document.getElementById('openCookies')?.addEventListener('click', () => document.getElementById('cookies')?.classList.add('show'))</script>
+</Base>
