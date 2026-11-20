@@ -116,6 +116,11 @@ const rooms = ['Kuhinja', 'Dnevni boravak', 'Spavaća soba', 'Ugradbeni plakar',
       if (vrsta !== 'ponuda') fd.set('termin', slot); else { fd.delete('datum') }
       for (const f of files) fd.append('slike', await shrink(f), f.name.replace(/\.\w+$/, '') + '.jpg')
       try {
+        if (import.meta.env.PUBLIC_PREVIEW === '1') {
+          await new Promise((r) => setTimeout(r, 700))
+          card.innerHTML = `<div class="ok-msg"><div class="big">✓</div><h3>Ovako izgleda potvrda</h3><p style="color:var(--muted);margin-top:10px">Ovo je pregled stranice — upit nije poslan. Na pravoj stranici stiže u ARDOR aplikaciju.</p></div>`
+          return
+        }
         if (!API) throw new Error('bez-api')
         const r = await fetch(`${API}/api/web/upit`, { method: 'POST', body: fd })
         const j = await r.json().catch(() => ({}))
