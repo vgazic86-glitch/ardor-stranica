@@ -68,7 +68,7 @@ const preview = import.meta.env.PUBLIC_PREVIEW === '1'
   <meta name="ardor-ga4" content={ga4}>
   <meta name="ardor-pixel" content={pixel}>
 </head>
-<body>
+<body class={preview ? 'has-preview' : undefined}>
 <a class="skip" href="#sadrzaj">Preskoči na sadržaj</a>
 {preview && <div class="preview-bar">Pregled nove web stranice ARDOR-a · obrasci ne šalju upite · fotografije i cijene su primjeri</div>}
 
