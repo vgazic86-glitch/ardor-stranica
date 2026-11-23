@@ -3,29 +3,37 @@ import Base from '../../layouts/Base.astro'
 import ProductCard from '../../components/ProductCard.astro'
 import { getCollection, render } from 'astro:content'
 import { getCatalog } from '../../data/catalog'
+import { cmsArticles } from '../../data/cms'
+
+/** Članci iz datoteka (src/content/inspiracija) i članci iz ARDOR aplikacije (Web stranica → Članci). */
 export async function getStaticPaths() {
   const posts = await getCollection('inspiracija')
-  return posts.map((p) => ({ params: { slug: p.id }, props: { post: p } }))
+  const fromApp = cmsArticles.map((a) => ({ params: { slug: a.slug }, props: { md: null, app: a } }))
+  const taken = new Set(fromApp.map((x) => x.params.slug))
+  return [...fromApp, ...posts.filter((p) => !taken.has(p.id)).map((p) => ({ params: { slug: p.id }, props: { md: p, app: null } }))]
 }
-const { post } = Astro.props
-const { Content } = await render(post)
+const { md, app } = Astro.props
+const Content = md ? (await render(md)).Content : null
+const a = app
+  ? { naslov: app.title, opis: app.summary, tema: app.theme, citanje: app.readMin, slika: app.image || '/img/grande.jpg', datum: new Date(app.date), autor: 'ARDOR', prostorija: app.room }
+  : md!.data
 const { products } = await getCatalog()
-const related = post.data.prostorija ? products.filter((p) => p.room === post.data.prostorija).slice(0, 2) : []
-const d = post.data.datum
+const related = a.prostorija ? products.filter((p) => p.room === a.prostorija).slice(0, 2) : []
+const d = a.datum
 const datum = `${d.getDate()}. ${d.getMonth() + 1}. ${d.getFullYear()}.`
-const schema = [{ '@context': 'https://schema.org', '@type': 'Article', headline: post.data.naslov, description: post.data.opis, image: `https://www.ardornamjestaj.com${post.data.slika}`, datePublished: d.toISOString(), author: { '@type': 'Organization', name: post.data.autor }, publisher: { '@id': 'https://www.ardornamjestaj.com/#salon' } }]
+const schema = [{ '@context': 'https://schema.org', '@type': 'Article', headline: a.naslov, description: a.opis, image: `https://www.ardornamjestaj.com${a.slika}`, datePublished: d.toISOString(), author: { '@type': 'Organization', name: a.autor }, publisher: { '@id': 'https://www.ardornamjestaj.com/#salon' } }]
 ---
-<Base title={`${post.data.naslov} | ARDOR`} description={post.data.opis} image={post.data.slika} schema={schema}>
+<Base title={`${a.naslov} | ARDOR`} description={a.opis} image={a.slika} schema={schema}>
   <section class="hero short">
-    <div class="hero-media"><img src={post.data.slika} alt=""></div>
+    <div class="hero-media"><img src={a.slika} alt=""></div>
     <div class="wrap">
-      <nav class="crumbs" aria-label="Putanja"><a href="/">Početna</a><span><a href="/inspiracija/">Inspiracija</a></span><span>{post.data.tema}</span></nav>
-      <div class="eyebrow">{post.data.tema} · {post.data.citanje} min čitanja · {datum}</div>
-      <h1>{post.data.naslov}</h1>
+      <nav class="crumbs" aria-label="Putanja"><a href="/">Početna</a><span><a href="/inspiracija/">Inspiracija</a></span><span>{a.tema}</span></nav>
+      <div class="eyebrow">{a.tema} · {a.citanje} min čitanja · {datum}</div>
+      <h1>{a.naslov}</h1>
     </div>
   </section>
   <section class="sec-tight"><div class="wrap article-grid">
-    <article class="prose"><Content /></article>
+    {Content ? <article class="prose"><Content /></article> : <article class="prose" set:html={app!.html} />}
     <aside class="aside-card">
       <div class="eyebrow" style="margin-bottom:10px">Razgovaraj s dizajnerom</div>
       <p style="margin:0 0 16px">Imaš pitanje za svoj prostor? Ponesi mjere u salon — savjet je besplatan.</p>

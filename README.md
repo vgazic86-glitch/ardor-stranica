@@ -6,7 +6,8 @@ Statična stranica (Astro 7) koja katalog, dostupnost i akcije čita iz ARDOR ap
 
 ```bash
 pnpm install
-pnpm dev        # http://localhost:4321 — bez ARDOR_API_URL koristi primjerni katalog
+pnpm sync       # preuzmi sadržaj iz aplikacije (src/data/cms.json, public/cms/)
+pnpm dev        # http://localhost:4321 — bez preuzetog sadržaja: zadani tekstovi i primjerni katalog
 pnpm build      # statične stranice u dist/
 pnpm preview    # pregled izgrađenog dist/
 ```
@@ -15,7 +16,7 @@ pnpm preview    # pregled izgrađenog dist/
 
 | Varijabla | Značenje |
 | --- | --- |
-| `ARDOR_API_URL` | adresa aplikacije za izgradnju (katalog). Npr. `https://ardor-4mdu.onrender.com`. Prazno = primjerni katalog. |
+| `ARDOR_API_URL` | adresa aplikacije za izgradnju: `scripts/sync-cms.mjs` preuzme katalog, tekstove i članke (CMS u aplikaciji: Web stranica → Tekstovi na webu / Članci) i fotografije u `public/cms/`. Npr. `https://ardor-4mdu.onrender.com`. Prazno = zadani tekstovi i primjerni katalog. |
 | `PUBLIC_ARDOR_API_URL` | ista adresa, koristi je preglednik (obrasci, AI savjetnik, pitanja o materijalima). |
 | `PUBLIC_GA4_ID` | Google Analytics 4 (`G-…`). Prazno = isključeno. Pali se tek nakon pristanka na kolačiće. |
 | `PUBLIC_META_PIXEL_ID` | Meta Pixel. Prazno = isključeno. Samo uz „Prihvati sve”. |

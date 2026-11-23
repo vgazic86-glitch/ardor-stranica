@@ -11,26 +11,34 @@ import LeadForm from '../components/LeadForm.astro'
 import ContactInfo from '../components/ContactInfo.astro'
 import { getCatalog } from '../data/catalog'
 import { getCollection } from 'astro:content'
+import { cmsArticles, t } from '../data/cms'
 
 const { products } = await getCatalog()
 const featured = (products.filter((p) => p.featured).length >= 3 ? products.filter((p) => p.featured) : products).slice(0, 6)
 const sale = products.filter((p) => p.oldPrice)
 const maxOff = sale.length ? Math.max(...sale.map((p) => Math.round((1 - p.price / p.oldPrice!) * 100))) : 0
-const posts = (await getCollection('inspiracija')).sort((a, b) => +b.data.datum - +a.data.datum).slice(0, 3)
+const posts = [
+  ...cmsArticles.map((a) => ({ href: `/inspiracija/${a.slug}/`, img: a.image, tema: a.theme, min: a.readMin, naslov: a.title, datum: +new Date(a.date) })),
+  ...(await getCollection('inspiracija')).map((p) => ({ href: `/inspiracija/${p.id}/`, img: p.data.slika, tema: p.data.tema, min: p.data.citanje, naslov: p.data.naslov, datum: +p.data.datum })),
+].sort((a, b) => b.datum - a.datum).slice(0, 3)
+const heroLines = t('naslovna.naslov', 'Tvoj dom zaslužuje\nnamještaj koji ga\nčini boljim.').split('\n').map((l) => l.trim()).filter(Boolean).slice(0, 3)
+const lastLine = heroLines.pop() ?? ''
+const lastWord = lastLine.split(' ').pop() ?? ''
+const lastRest = lastLine.slice(0, lastLine.length - lastWord.length)
+const heroImg = t('naslovna.slika', '/img/grande.jpg')
 ---
 <Base title="ARDOR namještaj Banja Luka — salon i namještaj po mjeri"
   description="Salon od 6000 m² u Banjoj Luci: garniture, spavaće sobe, kuhinje i plakari po mjeri iz vlastitog pogona. Dostava, montaža, rate do 120 mj.">
 
 <section class="hero">
-  <div class="hero-media"><img src="/img/grande.jpg" alt="Uređen dnevni boravak s garniturom iz ARDOR salona" fetchpriority="high" width="1201" height="828"></div>
+  <div class="hero-media"><img src={heroImg} alt="Uređen dnevni boravak s garniturom iz ARDOR salona" fetchpriority="high" width="1201" height="828"></div>
   <div class="wrap">
-    <div class="eyebrow fade-in">Salon namještaja · Banja Luka · od 1996.</div>
+    <div class="eyebrow fade-in">{t('naslovna.oznaka', 'Salon namještaja · Banja Luka · od 1996.')}</div>
     <h1>
-      <span class="split-line"><span>Tvoj dom zaslužuje</span></span>
-      <span class="split-line"><span>namještaj koji ga</span></span>
-      <span class="split-line"><span>čini <em>boljim.</em></span></span>
+      {heroLines.map((l) => <span class="split-line"><span>{l}</span></span>)}
+      <span class="split-line"><span>{lastRest}<em>{lastWord}</em></span></span>
     </h1>
-    <p class="hero-sub fade-in">Kreiraj svoj dom po mjeri — uz stručne savjete, namještaj iz vlastitog pogona i potpunu podršku od ideje do montaže.</p>
+    <p class="hero-sub fade-in">{t('naslovna.podnaslov', 'Kreiraj svoj dom po mjeri — uz stručne savjete, namještaj iz vlastitog pogona i potpunu podršku od ideje do montaže.')}</p>
     <div class="hero-cta fade-in">
       <a class="btn btn-primary" href="/kontakt/?vrsta=ponuda">Zatraži besplatnu ponudu <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       <a class="btn btn-ghost" href="#savjetnik">Isprobaj AI savjetnika</a>
@@ -48,8 +56,8 @@ const posts = (await getCollection('inspiracija')).sort((a, b) => +b.data.datum 
   <div class="wrap story-grid">
     <div>
       <div class="eyebrow reveal">Naša priča</div>
-      <h2 class="reveal d1">Od 1996. uređujemo domove u kojima se lijepo živi — komad po komad.</h2>
-      <p class="lead reveal d2" style="margin-top:28px">Počeli smo kao distributer namještaja, 2007. otvorili salon od 6000 m² u mirnom dijelu Obilićeva, a 2016. pokrenuli vlastiti pogon. Danas ti možemo ponuditi i gotov komad sa zalihe i namještaj napravljen tačno za tvoj prostor.</p>
+      <h2 class="reveal d1">{t('naslovna.prica.naslov', 'Od 1996. uređujemo domove u kojima se lijepo živi — komad po komad.')}</h2>
+      <p class="lead reveal d2" style="margin-top:28px">{t('naslovna.prica.tekst', 'Počeli smo kao distributer namještaja, 2007. otvorili salon od 6000 m² u mirnom dijelu Obilićeva, a 2016. pokrenuli vlastiti pogon. Danas ti možemo ponuditi i gotov komad sa zalihe i namještaj napravljen tačno za tvoj prostor.')}</p>
       <div class="stats reveal d3">
         <div class="stat"><b data-count="1996">1996</b><span>godina osnivanja</span></div>
         <div class="stat"><b data-count="6000">6000</b><span>m² izložbenog prostora</span></div>
@@ -78,8 +86,8 @@ const posts = (await getCollection('inspiracija')).sort((a, b) => +b.data.datum 
 <section class="custom">
   <div class="wrap">
     <div class="custom-top">
-      <div><div class="eyebrow reveal">Namještaj po mjeri</div><h2 class="reveal d1">Svaki centimetar tvog prostora — iskorišten.</h2></div>
-      <div class="reveal d2"><p class="lead">Kuhinje, ugradbeni plakari, američki ormari i komode iz našeg pogona. Dolazimo na mjerenje, crtamo 3D prijedlog i montiramo — jedan tim od prve skice do zadnjeg šarafa.</p>
+      <div><div class="eyebrow reveal">Namještaj po mjeri</div><h2 class="reveal d1">{t('naslovna.pomjeri.naslov', 'Svaki centimetar tvog prostora — iskorišten.')}</h2></div>
+      <div class="reveal d2"><p class="lead">{t('naslovna.pomjeri.tekst', 'Kuhinje, ugradbeni plakari, američki ormari i komode iz našeg pogona. Dolazimo na mjerenje, crtamo 3D prijedlog i montiramo — jedan tim od prve skice do zadnjeg šarafa.')}</p>
       <div style="display:flex;gap:12px;flex-wrap:wrap"><a class="btn btn-primary" href="/kontakt/?vrsta=mjerenje">Zakaži besplatno mjerenje</a><a class="btn btn-ghost" href="/namjestaj-po-mjeri/">Kako radimo</a></div></div>
     </div>
     <Steps />
@@ -148,7 +156,7 @@ const posts = (await getCollection('inspiracija')).sort((a, b) => +b.data.datum 
     </div>
     <div class="posts">
       {posts.map((p, i) => (
-        <a class:list={['post reveal', `d${i}`]} href={`/inspiracija/${p.id}/`}><div class="p-img"><img src={p.data.slika} alt="" loading="lazy"></div><div class="post-meta">{p.data.tema} · {p.data.citanje} min čitanja</div><h3>{p.data.naslov}</h3></a>
+        <a class:list={['post reveal', `d${i}`]} href={p.href}><div class="p-img"><img src={p.img} alt="" loading="lazy"></div><div class="post-meta">{p.tema} · {p.min} min čitanja</div><h3>{p.naslov}</h3></a>
       ))}
     </div>
   </div>
@@ -159,7 +167,7 @@ const posts = (await getCollection('inspiracija')).sort((a, b) => +b.data.datum 
   <div class="wrap contact-grid">
     <div>
       <div class="eyebrow reveal">Kontakt i showroom</div>
-      <h2 class="reveal d1">Dođi, sjedni, isprobaj.</h2>
+      <h2 class="reveal d1">{t('naslovna.kontakt.naslov', 'Dođi, sjedni, isprobaj.')}</h2>
       <ContactInfo />
     </div>
     <div class="reveal d2"><LeadForm /></div>

@@ -1,4 +1,20 @@
-/** Podaci o firmi, kontakti i prostorije — jedno mjesto za sve stranice. */
+/** Podaci o firmi, kontakti i prostorije — jedno mjesto za sve stranice. Telefoni i radno vrijeme dolaze iz aplikacije (cms.ts). */
+import { intl, t } from './cms'
+
+const PHONE = t('kontakt.telefon', '051 433 750')
+const MOBILE = t('kontakt.mobitel', '065 436 420')
+const span = (v: string) => /^(\d{1,2})[:.](\d{2})\s*[–-]\s*(\d{1,2})[:.](\d{2})$/.exec(v.trim())
+const pad = (x: string) => x.padStart(2, '0')
+const hour = (label: string, value: string, days: string[]) => {
+  const m = span(value)
+  return { label, value, days, opens: m ? `${pad(m[1])}:${m[2]}` : '', closes: m ? `${pad(m[3])}:${m[4]}` : '' }
+}
+const HOURS = [
+  hour('Radni dan', t('kontakt.radni', '08:00 – 20:30'), ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']),
+  hour('Subota', t('kontakt.subota', '08:00 – 19:00'), ['Saturday']),
+  hour('Nedjelja', t('kontakt.nedjelja', 'Zatvoreno'), ['Sunday']),
+]
+
 
 export const SITE = {
   name: 'ARDOR namještaj',
@@ -8,18 +24,15 @@ export const SITE = {
   zip: '78000',
   city: 'Banja Luka',
   country: 'BA',
-  phone: '+387 51 433 750',
-  phoneHref: 'tel:+38751433750',
-  mobile: '+387 65 436 420',
-  mobileHref: 'tel:+38765436420',
-  whatsapp: 'https://wa.me/38765436420',
-  viber: 'viber://chat?number=%2B38765436420',
+  phone: PHONE,
+  phoneHref: `tel:+${intl(PHONE)}`,
+  mobile: MOBILE,
+  mobileHref: `tel:+${intl(MOBILE)}`,
+  whatsapp: `https://wa.me/${intl(MOBILE)}`,
+  viber: `viber://chat?number=%2B${intl(MOBILE)}`,
   mapUrl: 'https://maps.google.com/?q=Vojvode+Pere+Kre%C4%87e+21+Banja+Luka',
   mapEmbed: 'https://maps.google.com/maps?q=Vojvode%20Pere%20Kre%C4%87e%2021%2C%20Banja%20Luka&z=15&output=embed',
-  hours: [
-    { label: 'Radni dan', value: '08:00 – 20:30', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '08:00', closes: '20:30' },
-    { label: 'Subota', value: '08:00 – 19:00', days: ['Saturday'], opens: '08:00', closes: '19:00' },
-  ],
+  hours: HOURS,
   emails: [
     { label: 'Prodaja', value: 'prodaja@ardornamjestaj.com' },
     { label: 'Namještaj po mjeri', value: 'proizvodnja@ardornamjestaj.com' },
@@ -31,7 +44,7 @@ export const SITE = {
   facebook: 'https://www.facebook.com/ardorbanjaluka/',
   instagram: 'https://www.instagram.com/ardornamjestaj/',
   founded: 1996,
-} as const
+}
 
 export const NAV = [
   { href: '/namjestaj-po-mjeri/', label: 'Po mjeri' },

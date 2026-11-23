@@ -2,7 +2,13 @@
 import Base from '../../layouts/Base.astro'
 import CtaBand from '../../components/CtaBand.astro'
 import { getCollection } from 'astro:content'
-const posts = (await getCollection('inspiracija')).sort((a, b) => +b.data.datum - +a.data.datum)
+import { cmsArticles } from '../../data/cms'
+const fromApp = cmsArticles.map((a) => ({ href: `/inspiracija/${a.slug}/`, img: a.image || '/img/grande.jpg', tema: a.theme, min: a.readMin, naslov: a.title, datum: +new Date(a.date) }))
+const taken = new Set(cmsArticles.map((a) => a.slug))
+const posts = [
+  ...fromApp,
+  ...(await getCollection('inspiracija')).filter((p) => !taken.has(p.id)).map((p) => ({ href: `/inspiracija/${p.id}/`, img: p.data.slika, tema: p.data.tema, min: p.data.citanje, naslov: p.data.naslov, datum: +p.data.datum })),
+].sort((a, b) => b.datum - a.datum)
 ---
 <Base title="Inspiracija i savjeti za uređenje doma | ARDOR" description="Savjeti za uređenje: boje, mali prostori, kuhinje, spavaće sobe, materijali i održavanje namještaja — iz iskustva ARDOR salona.">
   <section class="page-head"><div class="wrap">
@@ -11,7 +17,7 @@ const posts = (await getCollection('inspiracija')).sort((a, b) => +b.data.datum 
     <p class="lead">Praktični savjeti iz salona i radionice: kako odabrati, rasporediti i održavati namještaj.</p>
   </div></section>
   <section class="sec-tight" style="padding-top:0"><div class="wrap"><div class="posts" style="margin-top:0">
-    {posts.map((p, i) => <a class:list={['post reveal', `d${i % 3}`]} href={`/inspiracija/${p.id}/`}><div class="p-img"><img src={p.data.slika} alt="" loading="lazy"></div><div class="post-meta">{p.data.tema} · {p.data.citanje} min čitanja</div><h3>{p.data.naslov}</h3></a>)}
+    {posts.map((p, i) => <a class:list={['post reveal', `d${i % 3}`]} href={p.href}><div class="p-img"><img src={p.img} alt="" loading="lazy"></div><div class="post-meta">{p.tema} · {p.min} min čitanja</div><h3>{p.naslov}</h3></a>)}
   </div></div></section>
   <CtaBand title="Radije razgovor nego čitanje?" text="Naš dizajner odgovara na pitanja u salonu, besplatno." primary={['Zakaži posjet', '/kontakt/?vrsta=posjet']} secondary={['AI savjetnik', '/savjetnik/']} />
 </Base>

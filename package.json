@@ -5,9 +5,10 @@
   "description": "Javna web stranica ARDOR namještaja (ardornamjestaj.com)",
   "scripts": {
     "dev": "astro dev --port 4321",
-    "build": "astro build",
+    "build": "node scripts/sync-cms.mjs && astro build",
     "preview": "astro preview --port 4321",
-    "check": "astro check"
+    "check": "astro check",
+    "sync": "node scripts/sync-cms.mjs"
   },
   "dependencies": {
     "astro": "7.4.13",

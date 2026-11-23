@@ -1,10 +1,9 @@
 /**
- * Katalog za web. Pri izgradnji (build) čita javni API ARDOR aplikacije:
- *   GET {ARDOR_API_URL}/api/web/katalog
- * Ako adresa nije postavljena ili API ne odgovori, koristi primjerni katalog ispod
- * (da se stranica uvijek može izgraditi i pregledati).
+ * Katalog za web. Pri izgradnji ga scripts/sync-cms.mjs preuzme iz ARDOR aplikacije (GET /api/web/katalog)
+ * zajedno s fotografijama. Bez aplikacije koristi primjerni katalog ispod (da se stranica uvijek može izgraditi).
  */
 import type { RoomKey } from './site'
+import { cmsProducts } from './cms'
 
 export interface WebProduct {
   id: string
@@ -44,26 +43,7 @@ const SAMPLE: WebProduct[] = [
   { id: 's14', slug: 'kan-kan-ugaona-garnitura', name: 'Kan Kan', type: 'Ugaona garnitura', room: 'dnevni-boravak', style: 'moderni', color: 'boja', material: 'tkanina', avail: 'narudzba', price: 1390, images: ['/img/kankan.jpg'], swatches: ['#B8C23A', '#6B5A44'], dimensions: '250 × 160 cm', materials: 'tkanina, funkcija spavanja', personal: '12 boja tkanine.', description: 'Vesela ugaona garnitura s funkcijom spavanja.' },
 ]
 
-let cache: { products: WebProduct[]; source: 'api' | 'primjer' } | null = null
-
-export async function getCatalog() {
-  if (cache) return cache
-  const base = (import.meta.env.ARDOR_API_URL || '').replace(/\/$/, '')
-  if (base) {
-    try {
-      const r = await fetch(`${base}/api/web/katalog`, { signal: AbortSignal.timeout(90_000) })
-      if (r.ok) {
-        const j = (await r.json()) as { products: WebProduct[] }
-        if (Array.isArray(j.products) && j.products.length) {
-          cache = { products: j.products, source: 'api' }
-          return cache
-        }
-      }
-      console.warn(`[katalog] API odgovorio ${r.status} — koristim primjerni katalog`)
-    } catch (e) {
-      console.warn('[katalog] API nije dostupan — koristim primjerni katalog', e)
-    }
-  }
-  cache = { products: SAMPLE, source: 'primjer' }
-  return cache
+/** Katalog: preuzet iz aplikacije (scripts/sync-cms.mjs → cms.json), inače primjerni. */
+export async function getCatalog(): Promise<{ products: WebProduct[]; source: 'api' | 'primjer' }> {
+  return cmsProducts.length ? { products: cmsProducts, source: 'api' } : { products: SAMPLE, source: 'primjer' }
 }

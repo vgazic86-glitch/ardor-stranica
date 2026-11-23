@@ -1,4 +1,5 @@
 ---
+import { SITE } from '../../data/site'
 import Base from '../../layouts/Base.astro'
 import Steps from '../../components/Steps.astro'
 import MaterialCards from '../../components/MaterialCards.astro'
@@ -66,5 +67,5 @@ const svc = {
     <div><div class="eyebrow">Zakaži mjerenje</div><h2>Pošalji mjere ili nas pozovi da izmjerimo.</h2><p class="lead" style="margin-top:18px">Dodaj fotografiju prostorije i okvirne mjere — u dogovoru dolazimo na mjerenje u Banjoj Luci i okolini.</p></div>
     <LeadForm vrsta="mjerenje" />
   </div></section>
-  <CtaBand title="Radije uživo?" text="Dođi u salon s mjerama i fotografijama — za 20 minuta nacrtamo prvu varijantu." primary={['Zakaži posjet salonu', '/kontakt/?vrsta=posjet']} secondary={['Nazovi 051 433 750', 'tel:+38751433750']} />
+  <CtaBand title="Radije uživo?" text="Dođi u salon s mjerama i fotografijama — za 20 minuta nacrtamo prvu varijantu." primary={['Zakaži posjet salonu', '/kontakt/?vrsta=posjet']} secondary={[`Nazovi ${SITE.phone}`, SITE.phoneHref]} />
 </Base>

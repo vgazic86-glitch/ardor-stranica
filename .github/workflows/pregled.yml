@@ -1,10 +1,15 @@
 # Pregled stranice na GitHub Pages (https://<korisnik>.github.io/ardor-web/).
-# Bez veze s aplikacijom: primjerni katalog, obrasci ne šalju, Google ne indeksira.
+# Tekstovi, članci i katalog dolaze iz ARDOR aplikacije (Web stranica → Tekstovi / Članci); obrasci ne šalju, Google ne indeksira.
+# Osvježava se: push na main, svakih 30 min (07–22 h), ili odmah kad aplikacija pošalje repository_dispatch „cms” (WEB_DEPLOY_HOOK + WEB_DEPLOY_TOKEN).
 name: Pregled (GitHub Pages)
 on:
   push:
     branches: [main]
   workflow_dispatch:
+  repository_dispatch:
+    types: [cms]
+  schedule:
+    - cron: '*/30 5-20 * * *'
 permissions:
   contents: read
   pages: write
@@ -18,6 +23,7 @@ jobs:
     env:
       BASE_PATH: /${{ github.event.repository.name }}
       PUBLIC_PREVIEW: '1'
+      ARDOR_API_URL: https://ardor-4mdu.onrender.com
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4

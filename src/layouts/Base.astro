@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css'
 import { NAV, ROOMS, SITE } from '../data/site'
+import { bar } from '../data/cms'
 
 interface Props {
   title: string
@@ -28,7 +29,7 @@ const business = {
   foundingDate: String(SITE.founded),
   priceRange: 'KM–KMKM',
   address: { '@type': 'PostalAddress', streetAddress: SITE.street, postalCode: SITE.zip, addressLocality: SITE.city, addressCountry: SITE.country },
-  openingHoursSpecification: SITE.hours.map((h) => ({ '@type': 'OpeningHoursSpecification', dayOfWeek: h.days, opens: h.opens, closes: h.closes })),
+  openingHoursSpecification: SITE.hours.filter((h) => h.opens).map((h) => ({ '@type': 'OpeningHoursSpecification', dayOfWeek: h.days, opens: h.opens, closes: h.closes })),
   sameAs: [SITE.facebook, SITE.instagram],
 }
 const ga4 = import.meta.env.PUBLIC_GA4_ID || ''
@@ -70,7 +71,24 @@ const preview = import.meta.env.PUBLIC_PREVIEW === '1'
 </head>
 <body class={preview ? 'has-preview' : undefined}>
 <a class="skip" href="#sadrzaj">Preskoči na sadržaj</a>
-{preview && <div class="preview-bar">Pregled nove web stranice ARDOR-a · obrasci ne šalju upite · fotografije i cijene su primjeri</div>}
+{(preview || bar.text) && (
+  <div class="topbars" id="topbars">
+    {preview && <div class="preview-bar">Pregled nove web stranice ARDOR-a · obrasci ne šalju upite · fotografije i cijene su primjeri</div>}
+    {bar.text && (bar.link
+      ? <a class="notice-bar" href={bar.link} data-until={bar.until} data-ev="obavijest">{bar.text} <span aria-hidden="true">→</span></a>
+      : <div class="notice-bar" data-until={bar.until}>{bar.text}</div>)}
+  </div>
+)}
+<script is:inline>
+  // Obavijest nestaje nakon datuma „do” (Banja Luka) i bez nove izgradnje; navigacija ide ispod traka.
+  (function () {
+    var b = document.getElementById('topbars'); if (!b) return
+    var n = b.querySelector('.notice-bar[data-until]'), u = n && n.getAttribute('data-until')
+    if (u && new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Sarajevo' }) > u) n.remove()
+    var fit = function () { document.documentElement.style.setProperty('--topbars', b.offsetHeight + 'px') }
+    fit(); addEventListener('resize', fit)
+  })()
+</script>
 
 <header class="nav" id="nav">
   <div class="wrap">
@@ -92,11 +110,11 @@ const preview = import.meta.env.PUBLIC_PREVIEW === '1'
 
 <footer class="site">
   <div class="wrap">
-    <div class="foot-big">Uredimo tvoj dom.<br><a href={SITE.phoneHref} data-ev="poziv">051 433 750</a></div>
+    <div class="foot-big">Uredimo tvoj dom.<br><a href={SITE.phoneHref} data-ev="poziv">{SITE.phone}</a></div>
     <div class="foot-cols">
       <div>
         <img src="/img/ardor-logo-negativ.svg" alt="ARDOR" style="height:30px;margin-bottom:18px" class="logo-dark" width="124" height="30">
-        <p style="color:var(--muted);font-size:14px;max-width:320px">{SITE.legal} — salon namještaja i proizvodnja namještaja po mjeri. {SITE.street}, {SITE.city}.<br>Radni dan {SITE.hours[0].value}, subota {SITE.hours[1].value}.</p>
+        <p style="color:var(--muted);font-size:14px;max-width:320px">{SITE.legal} — salon namještaja i proizvodnja namještaja po mjeri. {SITE.street}, {SITE.city}.<br>Radni dan {SITE.hours[0].value}, subota {SITE.hours[1].value}{/^zatvoreno$/i.test(SITE.hours[2].value) ? '' : `, nedjelja ${SITE.hours[2].value}`}.</p>
       </div>
       <div><h4>Namještaj</h4>{ROOMS.slice(0, 6).map((r) => <a href={`/namjestaj/${r.key}/`}>{r.name}</a>)}</div>
       <div><h4>ARDOR</h4><a href="/namjestaj-po-mjeri/">Namještaj po mjeri</a><a href="/namjestaj-po-mjeri/kuhinje/">Kuhinje po mjeri</a><a href="/namjestaj-po-mjeri/ugradbeni-plakari/">Ugradbeni plakari</a><a href="/savjetnik/">AI savjetnik</a><a href="/placanje-na-rate/">Plaćanje na rate</a><a href="/o-nama/">O nama</a></div>
