@@ -2,20 +2,17 @@
 import Base from '../layouts/Base.astro'
 import CtaBand from '../components/CtaBand.astro'
 ---
-<Base title="Namještaj na rate — do 120 mjeseci | ARDOR Banja Luka" description="Kupi namještaj na rate: partnerski kredit od 300 do 50.000 KM na 3 do 120 mjeseci, uz ličnu kartu i potvrdu o zaposlenju ili penziji.">
+<Base title="Namještaj na rate | ARDOR Banja Luka" description="Kupi namještaj na rate uz partnerski kredit. Potrebna je lična karta i potvrda o zaposlenju ili penziji, a zahtjev popunjavamo zajedno u salonu.">
   <section class="page-head"><div class="wrap">
     <nav class="crumbs" aria-label="Putanja"><a href="/">Početna</a><span>Plaćanje na rate</span></nav>
     <div class="eyebrow">Plaćanje</div><h1>Novi dom danas, plaćanje na rate.</h1>
-    <p class="lead">Gotovina, kartice ili partnerski kredit od 300 do 50.000 KM s rokom otplate od 3 do 120 mjeseci. Potrebna je važeća lična karta i status zaposlenog ili penzionera.</p>
+    <p class="lead">Plati gotovinom, karticom ili na rate uz partnerski kredit. Potrebna je važeća lična karta i status zaposlenog ili penzionera.</p>
   </div></section>
   <section class="sec-tight" style="padding-top:0"><div class="wrap grid-2" style="align-items:start">
     <div class="calc">
-      <div class="eyebrow">Okvirni izračun</div>
-      <label class="field">Iznos kupovine (KM)<input type="number" id="iznos" min="300" max="50000" step="100" value="3000"></label>
-      <label class="field">Broj mjeseci: <b id="mjL">24</b><input type="range" id="mj" min="3" max="120" value="24" class="range-big"></label>
-      <div class="note">Okvirna mjesečna rata (bez kamate i troškova kredita):</div>
-      <output id="rata">125 KM</output>
-      <p class="note">Tačnu ratu, kamatu i ukupan trošak kredita dobiješ u salonu ili od banke — ovaj izračun je samo orijentacija.</p>
+      <div class="eyebrow">Partnerski kredit</div>
+      <h2 style="margin-top:12px">Ratu prilagođavamo tebi.</h2>
+      <p class="note" style="margin-top:12px">Iznos rate i uslove kredita dogovaramo u salonu, prema vrijednosti kupovine i tvojim mogućnostima. Tačnu ratu, kamatu i ukupan trošak kredita dobiješ prije potpisivanja.</p>
     </div>
     <div>
       <h2>Kako ide</h2>
@@ -27,13 +24,4 @@ import CtaBand from '../components/CtaBand.astro'
     </div>
   </div></section>
   <CtaBand title="Pitaj za ratu za svoj komad." text="Pošalji upit s nazivom komada — javljamo okvirnu ratu i uslove." />
-  <script>
-    const i = document.getElementById('iznos') as HTMLInputElement, m = document.getElementById('mj') as HTMLInputElement
-    const out = () => {
-      const v = Math.min(50000, Math.max(300, Number(i.value) || 0)), n = Number(m.value)
-      document.getElementById('mjL')!.textContent = String(n)
-      document.getElementById('rata')!.textContent = Math.ceil(v / n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' KM'
-    }
-    i.addEventListener('input', out); m.addEventListener('input', out); out()
-  </script>
 </Base>
