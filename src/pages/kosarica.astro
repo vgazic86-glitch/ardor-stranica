@@ -1,0 +1,152 @@
+---
+/** Košarica i narudžba bez kartice: šalje se u ARDOR aplikaciju (Web stranica → Narudžbe). */
+import Base from '../layouts/Base.astro'
+import { getCatalog } from '../data/catalog'
+import { SITE } from '../data/site'
+const { products } = await getCatalog()
+// Trenutne cijene i artikli u ponudi (osvježava se sa svakom izgradnjom weba).
+const live = Object.fromEntries(products.map((p) => [p.id, { name: p.name, price: p.price, img: p.images[0], url: `/namjestaj/${p.room}/${p.slug}/` }]))
+---
+<Base title="Košarica | ARDOR namještaj" description="Tvoja košarica u ARDOR salonu namještaja — naruči bez plaćanja karticom." noindex>
+  <section class="page-head"><div class="wrap">
+    <nav class="crumbs" aria-label="Putanja"><a href="/">Početna</a><span>Košarica</span></nav>
+    <h1>Košarica</h1>
+  </div></section>
+  <section class="sec-tight" style="padding-top:0"><div class="wrap">
+    <div id="cartEmpty" class="empty" hidden>Košarica je prazna. <a href="/namjestaj/">Pogledaj katalog →</a></div>
+    <div id="cartFull" class="cart-grid" hidden>
+      <div>
+        <div class="cart-lines" id="cartLines"></div>
+        <div class="cart-total"><span>Ukupno s PDV-om</span><b id="cartTotal">0 KM</b></div>
+        <p class="note" style="margin-top:10px">Dostavu i montažu ne naplaćujemo kroz web — trošak ti javljamo pri potvrdi narudžbe. Ako je artikal „po narudžbi”, javljamo i rok izrade.</p>
+      </div>
+      <div class="form-card" id="orderCard">
+        <h2 style="font-size:28px;margin-bottom:18px">Podaci za narudžbu</h2>
+        <form novalidate id="orderForm">
+          <div style="position:absolute;left:-9999px" aria-hidden="true"><label>Web stranica<input name="website" tabindex="-1" autocomplete="off"></label></div>
+          <div class="two">
+            <label class="field">Ime i prezime<input required name="ime" autocomplete="name" maxlength="80"></label>
+            <label class="field">Telefon<input required name="telefon" type="tel" autocomplete="tel" placeholder="+387 …" maxlength="30"></label>
+          </div>
+          <label class="field">E-mail (za potvrdu narudžbe, nije obavezno)<input name="email" type="email" autocomplete="email" maxlength="120"></label>
+          <div class="opts-title">Kako želiš preuzeti?</div>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="dostava" value="dostava" checked><span>Dostava na adresu<small>naš tim donosi i montira; trošak javljamo pri potvrdi</small></span></label>
+            <label class="opt"><input type="radio" name="dostava" value="preuzimanje"><span>Preuzimanje u salonu<small>{SITE.street}, {SITE.city}</small></span></label>
+          </div>
+          <div class="two" id="addrFields">
+            <label class="field">Mjesto<input name="mjesto" autocomplete="address-level2" maxlength="60" placeholder="npr. Banja Luka"></label>
+            <label class="field">Ulica i broj<input name="adresa" autocomplete="street-address" maxlength="160"></label>
+          </div>
+          <div class="opts-title">Plaćanje (bez kartice)</div>
+          <div class="opts">
+            <label class="opt"><input type="radio" name="placanje" value="pouzece" checked><span>Pouzećem<small>plaćaš pri dostavi</small></span></label>
+            <label class="opt"><input type="radio" name="placanje" value="predracun"><span>Uplata na račun<small>nakon potvrde šaljemo predračun</small></span></label>
+            <label class="opt"><input type="radio" name="placanje" value="salon"><span>U salonu<small>gotovinom ili karticom na blagajni</small></span></label>
+            <label class="opt"><input type="radio" name="placanje" value="rate"><span>Na rate<small>partnerski kredit — <a href="/placanje-na-rate/">kako ide</a></small></span></label>
+          </div>
+          <label class="field">Napomena (nije obavezno)<textarea name="napomena" rows="2" maxlength="1000" placeholder="npr. boja tkanine, sprat bez lifta, kad ti odgovara dostava…"></textarea></label>
+          <label class="check"><input type="checkbox" name="uvjeti" required> <span>Prihvatam <a href="/uvjeti-kupovine/" target="_blank">uvjete kupovine</a> i slažem se da me ARDOR kontaktira u vezi s narudžbom (<a href="/privatnost/" target="_blank">privatnost</a>).</span></label>
+          <p class="form-error" hidden></p>
+          <button class="btn btn-primary submit" type="submit" style="width:100%;justify-content:center">Pošalji narudžbu</button>
+          <p class="note" style="margin:14px 0 0;text-align:center">Ništa ne plaćaš sada. Zovemo te najkasnije sljedeći radni dan da potvrdimo narudžbu. Pitanja: <a href={SITE.phoneHref} data-ev="poziv">{SITE.phone}</a>.</p>
+        </form>
+      </div>
+    </div>
+  </div></section>
+  <script type="application/json" id="liveCatalog" set:html={JSON.stringify(live)} />
+  <script>
+    import { readCart, writeCart, MAX_QTY, type CartLine } from '../scripts/cart'
+    import { track } from '../scripts/site'
+    const API = (import.meta.env.PUBLIC_ARDOR_API_URL || '').replace(/\/$/, '')
+    const live: Record<string, { name: string; price: number; img: string; url: string }> = JSON.parse(document.getElementById('liveCatalog')!.textContent || '{}')
+    const km = (n: number) => Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' KM'
+    const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!)
+
+    /** Cijene i nazive uzmi iz trenutnog kataloga; artikal kojeg više nema označi. */
+    function fresh(): (CartLine & { gone: boolean })[] {
+      return readCart().map((l) => (live[l.id] ? { ...l, ...live[l.id], gone: false } : { ...l, gone: true }))
+    }
+
+    const linesEl = document.getElementById('cartLines')!
+    function draw() {
+      const lines = fresh()
+      writeCart(lines.map(({ gone: _g, ...l }) => l))
+      ;(document.getElementById('cartEmpty') as HTMLElement).hidden = lines.length > 0
+      ;(document.getElementById('cartFull') as HTMLElement).hidden = lines.length === 0
+      linesEl.innerHTML = lines.map((l, i) => `
+        <div class="cart-line">
+          <a href="${esc(l.url)}"><img src="${esc(l.img)}" alt=""></a>
+          <div>
+            <h3><a href="${esc(l.url)}">${esc(l.name)}</a></h3>
+            ${l.gone ? '<div class="gone">Više nije u ponudi na webu — ukloni ga iz košarice.</div>' : `<div class="note" style="margin:0">${km(l.price)} / kom</div>`}
+            <div class="qty"><button type="button" data-i="${i}" data-d="-1" aria-label="Manje">−</button><span>${l.qty}</span><button type="button" data-i="${i}" data-d="1" aria-label="Više">+</button></div>
+          </div>
+          <div class="sum">${l.gone ? '' : km(l.price * l.qty)}<button type="button" class="rm" data-rm="${i}">Ukloni</button></div>
+        </div>`).join('')
+      document.getElementById('cartTotal')!.textContent = km(lines.filter((l) => !l.gone).reduce((s, l) => s + l.price * l.qty, 0))
+    }
+    linesEl.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest('button'); if (!b) return
+      const lines = readCart()
+      if (b.dataset.rm) lines.splice(Number(b.dataset.rm), 1)
+      else { const l = lines[Number(b.dataset.i)]; if (l) l.qty = Math.max(0, Math.min(MAX_QTY, l.qty + Number(b.dataset.d))) }
+      writeCart(lines); draw()
+    })
+    draw()
+
+    const form = document.getElementById('orderForm') as HTMLFormElement
+    const addr = document.getElementById('addrFields') as HTMLElement
+    const sync = () => {
+      const pickup = (form.elements.namedItem('dostava') as RadioNodeList).value === 'preuzimanje'
+      addr.hidden = pickup
+      addr.querySelectorAll('input').forEach((i) => { i.required = !pickup })
+      const cod = form.querySelector<HTMLInputElement>('input[name=placanje][value=pouzece]')!
+      cod.disabled = pickup
+      if (pickup && cod.checked) form.querySelector<HTMLInputElement>('input[name=placanje][value=salon]')!.checked = true
+    }
+    form.addEventListener('change', sync); sync()
+
+    const err = form.querySelector<HTMLElement>('.form-error')!
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      err.hidden = true
+      const lines = fresh()
+      if (lines.some((l) => l.gone)) { err.textContent = 'Ukloni iz košarice artikle kojih više nema u ponudi.'; err.hidden = false; return }
+      if (!form.checkValidity()) { form.reportValidity(); return }
+      const btn = form.querySelector<HTMLButtonElement>('.submit')!
+      btn.disabled = true; btn.textContent = 'Šaljem…'
+      const fd = new FormData(form)
+      const body: Record<string, unknown> = Object.fromEntries(fd.entries())
+      body.uvjeti = fd.get('uvjeti') === 'on'
+      body.stavke = lines.map((l) => ({ id: l.id, kolicina: l.qty }))
+      const card = document.getElementById('orderCard')!
+      const ime = String(fd.get('ime')).split(' ')[0].replace(/[<>&]/g, '')
+      try {
+        if (import.meta.env.PUBLIC_PREVIEW === '1') {
+          await new Promise((r) => setTimeout(r, 700))
+          card.innerHTML = `<div class="ok-msg"><div class="big">✓</div><h3>Ovako izgleda potvrda</h3><p style="color:var(--muted);margin-top:10px">Ovo je pregled stranice — narudžba nije poslana. Na pravoj stranici stiže u ARDOR aplikaciju.</p></div>`
+          return
+        }
+        if (!API) throw new Error('bez-api')
+        const r = await fetch(`${API}/api/web/narudzba`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
+        const j = await r.json().catch(() => ({}))
+        if (!r.ok || !j.ok) throw new Error(j.error || 'Greška pri slanju.')
+        const total = lines.reduce((s, l) => s + l.price * l.qty, 0)
+        track('narudzba_poslana', { iznos: total, valuta: 'BAM' })
+        window.fbq?.('track', 'Purchase', { value: total, currency: 'BAM' })
+        writeCart([])
+        document.getElementById('cartFull')!.classList.remove('cart-grid')
+        linesEl.parentElement!.hidden = true
+        card.innerHTML = `<div class="ok-msg"><div class="big">✓</div><h3>Hvala, ${ime}!</h3><p style="margin-top:10px">Narudžba <b>${esc(j.number || '')}</b> je zaprimljena.</p><p style="color:var(--muted);margin-top:10px">Zovemo te najkasnije sljedeći radni dan da potvrdimo dostupnost, rok i dostavu.${fd.get('email') ? ' Potvrdu smo poslali i na e-mail.' : ''} Ništa ne plaćaš dok narudžbu ne potvrdimo.</p><p style="margin-top:22px"><a class="btn btn-ghost" href="/namjestaj/">Nazad na katalog</a></p></div>`
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      } catch (x) {
+        err.textContent = (x as Error).message === 'bez-api' || (x as Error).name === 'TypeError'
+          ? 'Narudžbu trenutno ne možemo poslati. Nazovi nas na 066 277 222 (i Viber/WhatsApp).'
+          : (x as Error).message
+        err.hidden = false
+        btn.disabled = false; btn.textContent = 'Pošalji narudžbu'
+      }
+    })
+  </script>
+</Base>

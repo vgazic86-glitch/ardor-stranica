@@ -130,7 +130,7 @@ const rooms = ['Kuhinja', 'Dnevni boravak', 'Spavaća soba', 'Ugradbeni plakar',
         card.innerHTML = `<div class="ok-msg"><div class="big">✓</div><h3>Hvala, ${ime.replace(/[<>&]/g, '')}!</h3><p style="color:var(--muted);margin-top:10px">${vrsta === 'ponuda' ? 'Upit je zaprimljen. Javljamo se još danas (radnim danom do 20:30).' : `Termin ${String(fd.get('datum')).split('-').reverse().join('. ')}. u ${slot} je rezervisan. Potvrdit ćemo ga pozivom ili porukom.`}</p></div>`
       } catch (x) {
         err.textContent = (x as Error).message === 'bez-api' || (x as Error).name === 'TypeError'
-          ? 'Upit trenutno ne možemo poslati. Nazovi nas na 051 433 750 ili piši na Viber 065 436 420.'
+          ? 'Upit trenutno ne možemo poslati. Nazovi nas na 051 433 750 ili piši na Viber 066 277 222.'
           : (x as Error).message
         err.hidden = false
         btn.disabled = false; btn.textContent = label

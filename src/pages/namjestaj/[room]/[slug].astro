@@ -52,7 +52,12 @@ const desc = `${p.name}${facts ? ': ' + facts : ''}. ${p.avail === 'stanje' ? 'O
         {p.swatches.length > 0 && <><dt>Boje</dt><dd><div class="swatches" style="margin:0">{p.swatches.map((c) => <i style={`background:${c}`}></i>)}</div></dd></>}
       </dl>
       {p.personal && <div class="personal">✦ <b>Personalizacija:</b> {p.personal}</div>}
-      <div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-primary" href="#upit">Zatraži ponudu</a><a class="btn btn-ghost" href="/kontakt/?vrsta=posjet">Pogledaj u salonu</a></div>
+      <div class="pd-buy">
+        <button type="button" class="btn btn-primary" id="addCart" data-id={p.id} data-name={p.name} data-price={p.price} data-img={p.images[0]} data-url={`/namjestaj/${room.key}/${p.slug}/`}>Dodaj u košaricu</button>
+        <a class="btn btn-ghost" href="#upit">Zatraži ponudu</a>
+      </div>
+      <div class="pd-buy"><span class="added" id="cartAdded" hidden>✓ Dodano u košaricu. <a href="/kosarica/">Pogledaj košaricu i naruči →</a></span></div>
+      <p class="note" style="margin-top:0">Naruči bez plaćanja karticom: pouzećem, uplatom na račun, u salonu ili na rate. Prije isporuke te zovemo da potvrdimo rok i dostavu. Radije uživo? <a href="/kontakt/?vrsta=posjet">Pogledaj u salonu</a>.</p>
       <ul class="list-check" style="margin-top:26px;font-size:15px">
         <li>Dostava i montaža našim timom</li><li>Garancija na namještaj</li><li>Plaćanje na rate uz partnerski kredit — <a href="/placanje-na-rate/">kako ide</a></li>
       </ul>
@@ -71,5 +76,14 @@ const desc = `${p.name}${facts ? ': ' + facts : ''}. ${p.avail === 'stanje' ? 'O
       document.querySelectorAll('.pd-thumbs button').forEach((x) => x.classList.toggle('on', x === b))
     }))
     addEventListener('load', () => window.ardorTrack?.('pregled_proizvoda', { naziv: document.querySelector('h1')?.textContent }))
+    import { addToCart } from '../../../scripts/cart'
+    const add = document.getElementById('addCart') as HTMLButtonElement | null
+    add?.addEventListener('click', () => {
+      const d = add.dataset
+      addToCart({ id: d.id!, name: d.name!, price: Number(d.price), img: d.img!, url: d.url! })
+      document.getElementById('cartAdded')!.hidden = false
+      add.textContent = 'Dodaj još jedan'
+      window.ardorTrack?.('dodano_u_kosaricu', { naziv: d.name, cijena: Number(d.price) })
+    })
   </script>
 </Base>

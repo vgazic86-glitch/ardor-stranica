@@ -96,6 +96,7 @@ const preview = import.meta.env.PUBLIC_PREVIEW === '1'
     <ul id="menu">
       {NAV.map((n) => <li><a href={n.href} aria-current={path.startsWith(n.href) ? 'page' : undefined}>{n.label}</a></li>)}
     </ul>
+    <a class="icon-btn cart-btn" href="/kosarica/" aria-label="Košarica" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h2l2.4 10.2a1.5 1.5 0 0 0 1.5 1.2h8.4a1.5 1.5 0 0 0 1.5-1.1L21 8H6.2"/><circle cx="9.5" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/></svg><span class="cart-n">0</span></a>
     <button class="icon-btn" id="themeBtn" aria-label="Svijetla ili tamna tema" title="Svijetla / tamna tema">
       <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
     </button>
@@ -118,7 +119,7 @@ const preview = import.meta.env.PUBLIC_PREVIEW === '1'
       </div>
       <div><h4>Namještaj</h4>{ROOMS.slice(0, 6).map((r) => <a href={`/namjestaj/${r.key}/`}>{r.name}</a>)}</div>
       <div><h4>ARDOR</h4><a href="/namjestaj-po-mjeri/">Namještaj po mjeri</a><a href="/namjestaj-po-mjeri/kuhinje/">Kuhinje po mjeri</a><a href="/namjestaj-po-mjeri/ugradbeni-plakari/">Ugradbeni plakari</a><a href="/savjetnik/">AI savjetnik</a><a href="/placanje-na-rate/">Plaćanje na rate</a><a href="/o-nama/">O nama</a></div>
-      <div><h4>Kontakt</h4><a href="/kontakt/">Kontakt i salon</a><a href={SITE.facebook} target="_blank" rel="noopener">Facebook</a><a href={SITE.instagram} target="_blank" rel="noopener">Instagram</a><a href="/privatnost/">Privatnost</a><a href="/kolacici/">Kolačići</a><a href="#" id="cookieSettings">Postavke kolačića</a></div>
+      <div><h4>Kontakt</h4><a href="/kontakt/">Kontakt i salon</a><a href={SITE.facebook} target="_blank" rel="noopener">Facebook</a><a href={SITE.instagram} target="_blank" rel="noopener">Instagram</a><a href="/uvjeti-kupovine/">Uvjeti kupovine</a><a href="/privatnost/">Privatnost</a><a href="/kolacici/">Kolačići</a><a href="#" id="cookieSettings">Postavke kolačića</a></div>
     </div>
     <div class="foot-bottom"><span>© {new Date().getFullYear()} {SITE.legal} · Banja Luka</span><span>Cijene uključuju PDV 17 %</span></div>
   </div>
@@ -139,7 +140,9 @@ const preview = import.meta.env.PUBLIC_PREVIEW === '1'
 
 <script>
   import { initSite } from '../scripts/site'
+  import { initCartBadge } from '../scripts/cart'
   initSite()
+  initCartBadge()
 </script>
 </body>
 </html>

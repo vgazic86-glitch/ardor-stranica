@@ -1,0 +1,38 @@
+---
+import Base from '../layouts/Base.astro'
+import { SITE } from '../data/site'
+---
+<Base title="Uvjeti kupovine | ARDOR namještaj" description="Uvjeti kupovine putem web stranice ARDOR namještaj: narudžba, potvrda, plaćanje bez kartice, dostava, povrat i reklamacije.">
+  <section class="page-head"><div class="wrap">
+    <nav class="crumbs" aria-label="Putanja"><a href="/">Početna</a><span>Uvjeti kupovine</span></nav>
+    <h1>Uvjeti kupovine</h1>
+    <p class="note">Nacrt — prije objave pregledati s pravnim savjetnikom.</p>
+  </div></section>
+  <section class="sec-tight" style="padding-top:0"><div class="wrap prose">
+    <h2>Prodavač</h2>
+    <p>{SITE.legal}, {SITE.street}, {SITE.zip} {SITE.city}, Bosna i Hercegovina. Telefon {SITE.phone}, e-mail <a href="mailto:info@ardornamjestaj.com">info@ardornamjestaj.com</a>.</p>
+    <h2>Narudžba i potvrda</h2>
+    <p>Artikle stavljaš u košaricu i šalješ narudžbu s podacima za kontakt, preuzimanje i plaćanje. Slanjem narudžbe ništa ne plaćaš. Narudžbu zaprimamo i javljamo ti se telefonom najkasnije sljedeći radni dan da potvrdimo dostupnost, rok isporuke i trošak dostave i montaže. <b>Kupoprodaja je zaključena kad narudžbu potvrdimo</b> (telefonom, porukom ili e-poštom). Ako artikal nije dostupan ili se ne dogovorimo, narudžba se otkazuje bez ikakvog troška za tebe.</p>
+    <h2>Cijene</h2>
+    <p>Sve cijene su u KM i uključuju PDV 17 %. Cijena na webu vrijedi za prikazanu izvedbu; za drugu tkaninu, boju ili dimenziju cijenu potvrđujemo prije zaključenja kupoprodaje. Akcijske cijene vrijede dok ima komada. Trošak dostave i montaže nije uključen u cijenu artikla i javljamo ga pri potvrdi.</p>
+    <h2>Plaćanje</h2>
+    <ul>
+      <li><b>Pouzećem</b> — pri dostavi, našem timu.</li>
+      <li><b>Uplatom na račun</b> — nakon potvrde šaljemo predračun; roba se isporučuje nakon uplate.</li>
+      <li><b>U salonu</b> — gotovinom ili karticom na blagajni salona.</li>
+      <li><b>Na rate</b> — putem partnerskog kredita (<a href="/placanje-na-rate/">kako ide</a>).</li>
+    </ul>
+    <p>Na web stranici se ne unose podaci o platnim karticama.</p>
+    <h2>Dostava i preuzimanje</h2>
+    <p>Dostavu i montažu obavlja naš tim, u terminu dogovorenom s tobom. Artikli „odmah sa zalihe” isporučuju se u pravilu za nekoliko dana, a artikli „po narudžbi” u roku koji javljamo pri potvrdi. Robu možeš preuzeti i u salonu. Pri preuzimanju pregledaj robu; vidljiva oštećenja navedi odmah na otpremnici.</p>
+    <h2>Odustanak od kupovine</h2>
+    <p>Kod kupovine putem web stranice možeš odustati od ugovora bez navođenja razloga u roku od 15 dana od preuzimanja robe, u skladu sa zakonom o zaštiti potrošača. Odustanak nam javi pisano (e-poštom ili dopisom). Roba se vraća neoštećena i nekorištena, u originalnom pakovanju ako je moguće; troškove povrata snosi kupac, osim ako se drukčije dogovorimo. Novac vraćamo najkasnije u roku od 15 dana od prijema vraćene robe.</p>
+    <p>Pravo na odustanak ne vrijedi za namještaj izrađen po tvojoj mjeri ili posebnom zahtjevu (dimenzija, tkanina, boja koje nisu standardna izvedba).</p>
+    <h2>Garancija i reklamacije</h2>
+    <p>Na namještaj vrijedi garancija proizvođača i zakonska odgovornost prodavača za nedostatke. Reklamaciju prijavi u salonu, telefonom ili e-poštom; riješit ćemo je u zakonskom roku.</p>
+    <h2>Lični podaci</h2>
+    <p>Podatke iz narudžbe koristimo samo za izvršenje narudžbe, dostavu i zakonske obaveze. Više u <a href="/privatnost/">pravilima privatnosti</a>.</p>
+    <h2>Sporovi</h2>
+    <p>Sporove nastojimo riješiti dogovorom. Kupac se može obratiti i nadležnoj inspekciji ili udruženju za zaštitu potrošača.</p>
+  </div></section>
+</Base>

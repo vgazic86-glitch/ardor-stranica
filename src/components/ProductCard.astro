@@ -12,7 +12,7 @@ const href = `/namjestaj/${p.room}/${p.slug}/`
     {p.oldPrice && <span class="badge sale">−{Math.round((1 - p.price / p.oldPrice) * 100)} %</span>}
     <img src={p.images[0]} alt={`${p.name} — ${p.type}`} loading="lazy" width="600" height="414">
     {p.images[1] && <img class="alt" src={p.images[1]} alt="" loading="lazy" width="600" height="414">}
-    <div class="quick"><span class="btn btn-primary">Pogledaj i zatraži ponudu</span></div>
+    <div class="quick"><span class="btn btn-primary">Pogledaj i naruči</span></div>
   </div>
   <div class="p-info">
     <div><h3>{p.name}</h3><small>{p.type}</small><div class="swatches">{p.swatches.map((c) => <i style={`background:${c}`}></i>)}</div></div>
