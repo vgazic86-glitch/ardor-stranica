@@ -4,7 +4,7 @@ import Catalog from '../../components/Catalog.astro'
 import RoomGrid from '../../components/RoomGrid.astro'
 import CtaBand from '../../components/CtaBand.astro'
 import { getCatalog } from '../../data/catalog'
-const { products, source } = await getCatalog()
+const { products } = await getCatalog()
 ---
 <Base title="Katalog namještaja — ARDOR salon Banja Luka" description="Garniture, spavaće sobe, kuhinje, ormari, dječje sobe i madraci. Filtriraj po prostoriji, stilu, boji, materijalu, cijeni i dostupnosti.">
   <section class="page-head">
@@ -15,8 +15,9 @@ const { products, source } = await getCatalog()
       <p class="lead">Sve što vidiš možeš isprobati u salonu od 6000 m². Oznaka „Odmah sa zalihe” znači dostavu za nekoliko dana, „Po narudžbi” — izradu u dogovorenom roku.</p>
     </div>
   </section>
-  <section class="sec-tight" style="padding-top:0"><div class="wrap"><Catalog products={products} />
-    {source === 'primjer' && <p class="note" style="margin-top:30px">Prikazan je primjerni katalog — pravi artikli dolaze iz ARDOR aplikacije.</p>}
+  <section class="sec-tight" style="padding-top:0"><div class="wrap">{products.length ? <Catalog products={products} /> : (
+      <div class="empty">Katalog na webu upravo slažemo — uskoro ovdje. Do tada pogledaj sve uživo u salonu ili zatraži ponudu, javljamo se isti dan.<br><br><a class="btn btn-primary" href="/kontakt/?vrsta=ponuda">Zatraži ponudu</a></div>
+    )}
   </div></section>
   <section class="sec-tight"><div class="wrap"><div class="eyebrow">Po prostorijama</div><h2 style="margin-bottom:40px">Kreni od prostorije.</h2><RoomGrid /></div></section>
   <CtaBand title="Ne vidiš što tražiš?" text="Velik dio namještaja radimo po mjeri u vlastitom pogonu. Pošalji mjere ili fotografiju — predložit ćemo rješenje." />

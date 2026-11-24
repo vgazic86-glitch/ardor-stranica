@@ -95,6 +95,7 @@ const heroImg = t('naslovna.slika', '/img/grande.jpg')
   </div>
 </section>
 
+{featured.length > 0 && (
 <section>
   <div class="wrap">
     <div class="cats-head">
@@ -104,6 +105,7 @@ const heroImg = t('naslovna.slika', '/img/grande.jpg')
     <div class="products">{featured.map((p, i) => <ProductCard p={p} i={i} />)}</div>
   </div>
 </section>
+)}
 
 {sale.length > 0 && (
 <section class="promo">

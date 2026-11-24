@@ -45,5 +45,6 @@ const SAMPLE: WebProduct[] = [
 
 /** Katalog: preuzet iz aplikacije (scripts/sync-cms.mjs → cms.json), inače primjerni. */
 export async function getCatalog(): Promise<{ products: WebProduct[]; source: 'api' | 'primjer' }> {
-  return cmsProducts.length ? { products: cmsProducts, source: 'api' } : { products: SAMPLE, source: 'primjer' }
+  // Primjeri (SAMPLE) se više ne prikazuju: web pokazuje samo artikle upisane u aplikaciji (Web stranica → Artikli na webu).
+  return { products: cmsProducts, source: cmsProducts.length ? 'api' : 'primjer' }
 }
