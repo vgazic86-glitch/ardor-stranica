@@ -24,7 +24,8 @@ const schema = [
     { '@type': 'ListItem', position: 2, name: room.name, item: abs(`/namjestaj/${room.key}/`) },
     { '@type': 'ListItem', position: 3, name: p.name } ] },
 ]
-const desc = `${p.name}: ${p.dimensions}, ${p.materials}. ${p.avail === 'stanje' ? 'Odmah sa zalihe' : 'Po narudžbi'}. Dostava i montaža, plaćanje na rate. Zatraži ponudu.`.slice(0, 158)
+const facts = [p.dimensions, p.materials].filter((x) => x && x.trim()).join(', ')
+const desc = `${p.name}${facts ? ': ' + facts : ''}. ${p.avail === 'stanje' ? 'Odmah sa zalihe' : 'Po narudžbi'}. Dostava i montaža, plaćanje na rate. Zatraži ponudu.`.slice(0, 158)
 ---
 <Base title={`${p.name} — ${p.type} | ARDOR Banja Luka`} description={desc} image={p.images[0]} schema={schema}>
   <section class="page-head" style="padding-bottom:0">
@@ -44,8 +45,8 @@ const desc = `${p.name}: ${p.dimensions}, ${p.materials}. ${p.avail === 'stanje'
       <div class="pd-price">{p.oldPrice && <s style="font-size:20px;color:var(--muted);margin-right:10px">{km(p.oldPrice)}</s>}od {km(p.price)}</div>
       <div class="note">Cijena s PDV-om. Konačna cijena ovisi o izabranoj tkanini, dimenziji i opremi.</div>
       <dl class="specs">
-        <dt>Mjere</dt><dd>{p.dimensions}</dd>
-        <dt>Materijal</dt><dd>{p.materials}</dd>
+        {p.dimensions?.trim() && <><dt>Mjere</dt><dd>{p.dimensions}</dd></>}
+        {p.materials?.trim() && <><dt>Materijal</dt><dd>{p.materials}</dd></>}
         <dt>Stil</dt><dd>{STYLES[p.style]} · {COLORS[p.color]} · {MATERIALS[p.material]}</dd>
         <dt>Dostupnost</dt><dd>{p.avail === 'stanje' ? '🟢 Odmah sa zalihe — dostava za nekoliko dana' : '🟡 Po narudžbi — rok javljamo uz ponudu'}</dd>
         {p.swatches.length > 0 && <><dt>Boje</dt><dd><div class="swatches" style="margin:0">{p.swatches.map((c) => <i style={`background:${c}`}></i>)}</div></dd></>}
