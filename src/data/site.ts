@@ -3,6 +3,8 @@ import { intl, t } from './cms'
 
 const PHONE = t('kontakt.telefon', '051 433 750')
 const MOBILE = t('kontakt.mobitel', '065 436 420')
+/** Broj za Viber i WhatsApp (gumbi na webu). */
+const CHAT = '066 277 222'
 const span = (v: string) => /^(\d{1,2})[:.](\d{2})\s*[–-]\s*(\d{1,2})[:.](\d{2})$/.exec(v.trim())
 const pad = (x: string) => x.padStart(2, '0')
 const hour = (label: string, value: string, days: string[]) => {
@@ -28,8 +30,8 @@ export const SITE = {
   phoneHref: `tel:+${intl(PHONE)}`,
   mobile: MOBILE,
   mobileHref: `tel:+${intl(MOBILE)}`,
-  whatsapp: `https://wa.me/${intl(MOBILE)}`,
-  viber: `viber://chat?number=%2B${intl(MOBILE)}`,
+  whatsapp: `https://wa.me/${intl(CHAT)}`,
+  viber: `viber://chat?number=%2B${intl(CHAT)}`,
   mapUrl: 'https://maps.google.com/?q=Vojvode+Pere+Krece+21+Banja+Luka',
   mapEmbed: 'https://maps.google.com/maps?q=Vojvode%20Pere%20Krece%2021%2C%20Banja%20Luka&z=15&output=embed',
   hours: HOURS,
