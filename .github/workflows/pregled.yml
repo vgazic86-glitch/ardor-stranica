@@ -23,7 +23,7 @@ jobs:
     env:
       BASE_PATH: /${{ github.event.repository.name }}
       PUBLIC_PREVIEW: '1'
-      ARDOR_API_URL: https://ardor-4mdu.onrender.com
+      ARDOR_API_URL: https://app.ardornamjestaj.com
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4

@@ -1,6 +1,6 @@
 /**
  * Prije izgradnje: preuzmi sadržaj iz ARDOR aplikacije (katalog, tekstovi, članci) i sve fotografije.
- *   ARDOR_API_URL=https://ardor-4mdu.onrender.com node scripts/sync-cms.mjs
+ *   ARDOR_API_URL=https://app.ardornamjestaj.com node scripts/sync-cms.mjs
  * Rezultat: src/data/cms.json + public/cms/*.jpg (fotografije se poslužuju s weba, ne s aplikacije,
  * pa stranica radi brzo i kad aplikacija „spava”).
  * Bez adrese ili ako aplikacija ne odgovori: ostaje zadnji preuzeti sadržaj, odnosno zadani tekstovi.
